@@ -29,62 +29,20 @@ const ResumeUpload = () => {
     setLoading(true);
 
     try {
-      // -----------------------
-      // MOCK FRONTEND ANALYSIS
-      // -----------------------
-      const text = "react javascript html css typescript"; // Pretend extracted text from resume
+      const formData = new FormData();
+      formData.append("file", file);
 
-      const ROLE_SKILLS: Record<string, string[]> = {
-        "Frontend Developer": ["react", "javascript", "html", "css", "typescript"],
-        "Backend Developer": ["python", "django", "flask", "sql", "api"],
-        "Data Analyst": ["excel", "sql", "python", "statistics", "powerbi"],
-        "UI/UX Designer": ["figma", "adobe xd", "ux", "ui", "prototyping"],
-        "AI Engineer": ["python", "tensorflow", "pytorch", "machine learning", "deep learning"],
-      };
-
-      const normalizedSkills = text.toLowerCase().split(" ");
-      const roleMatches = Object.entries(ROLE_SKILLS).map(([role, skills]) => {
-        const matchedCount = skills.filter(skill => normalizedSkills.includes(skill)).length;
-        const matchPercentage = Math.round((matchedCount / skills.length) * 100);
-        return { role, matchPercentage };
+      // ⚠️ Replace this with your actual backend URL
+      const response = await fetch("https://your-backend-url/analyze", {
+        method: "POST",
+        body: formData,
       });
-      roleMatches.sort((a, b) => b.matchPercentage - a.matchPercentage);
 
-      const predicted_role = roleMatches[0]?.role || "No role detected";
-      const similarity_score = roleMatches[0]?.matchPercentage + "%" || "0%";
+      if (!response.ok) throw new Error(`Backend Error: ${response.status}`);
+      const data = await response.json();
 
-      const JOB_LISTINGS: Record<string, any[]> = {
-        "Frontend Developer": [
-          { title: "Senior Frontend Engineer", company: "Google", location: "Bangalore", url: "#" },
-          { title: "React Developer", company: "Microsoft", location: "Hyderabad", url: "#" },
-          { title: "UI Engineer", company: "Flipkart", location: "Bangalore", url: "#" },
-        ],
-        "Backend Developer": [
-          { title: "Python Developer", company: "Amazon", location: "Mumbai", url: "#" },
-          { title: "Backend Engineer", company: "Flipkart", location: "Bangalore", url: "#" },
-        ],
-        "Data Analyst": [
-          { title: "Data Analyst", company: "TCS", location: "Pune", url: "#" },
-        ],
-        "UI/UX Designer": [
-          { title: "UX Designer", company: "Zoho", location: "Chennai", url: "#" },
-        ],
-        "AI Engineer": [
-          { title: "AI Researcher", company: "Google AI", location: "Bangalore", url: "#" },
-        ],
-      };
-
-      const job_listings = JOB_LISTINGS[predicted_role] || [];
-
-      const resumeData = {
-        extracted_skills: normalizedSkills.map(s => s.charAt(0).toUpperCase() + s.slice(1)),
-        predicted_role,
-        similarity_score,
-        job_listings,
-      };
-
-      navigate("/mapping", { state: { resumeData } });
-
+      // Navigate to Mapping page with full resume data
+      navigate("/mapping", { state: { resumeData: data } });
     } catch (error: any) {
       console.error(error);
       alert(error.message || "Failed to analyze resume.");
@@ -116,7 +74,9 @@ const ResumeUpload = () => {
               onDrop={handleDrop}
               onClick={() => inputRef.current?.click()}
               className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all ${
-                dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                dragging
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/40"
               }`}
             >
               <Upload className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
