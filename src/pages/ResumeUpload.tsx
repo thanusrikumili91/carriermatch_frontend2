@@ -1,7 +1,7 @@
+import { motion } from "framer-motion";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, FileText, X } from "lucide-react";
-import { motion } from "framer-motion";
 
 const BACKEND_URL = "https://thanusrikumili91-resumeai.hf.space/analyze";
 
@@ -38,14 +38,18 @@ const ResumeUpload = () => {
       });
 
       const data = await res.json();
-      console.log("Backend response:", data);
 
-      // Navigate to jobs page if backend returns a predicted role
-      if (data.predicted_role) {
-        navigate(`/jobs?role=${encodeURIComponent(data.predicted_role)}`);
+      if (data.error) {
+        alert(data.error);
+        setLoading(false);
+        return;
       }
+
+      // Pass predicted role to Mapping page
+      navigate(`/mapping?role=${encodeURIComponent(data.predicted_role)}`);
     } catch (err) {
-      console.error("Error sending resume:", err);
+      console.error(err);
+      alert("Error uploading file.");
     } finally {
       setLoading(false);
     }
@@ -57,7 +61,7 @@ const ResumeUpload = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-lg glass-card p-8"
+        className="w-full max-w-lg glass-card glow-box p-8 sm:p-10"
       >
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold mb-2">Upload Your Resume</h1>
@@ -74,6 +78,8 @@ const ResumeUpload = () => {
               className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all ${
                 dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
               }`}
+              role="button"
+              aria-label="Upload resume file"
             >
               <Upload className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
@@ -86,6 +92,7 @@ const ResumeUpload = () => {
                 accept=".pdf,image/*"
                 className="hidden"
                 onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                aria-label="File input"
               />
             </div>
 
@@ -102,7 +109,7 @@ const ResumeUpload = () => {
                     <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
                   </div>
                 </div>
-                <button onClick={() => setFile(null)} className="text-muted-foreground hover:text-foreground">
+                <button onClick={() => setFile(null)} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Remove file">
                   <X className="w-4 h-4" />
                 </button>
               </motion.div>
@@ -117,7 +124,11 @@ const ResumeUpload = () => {
             </button>
           </>
         ) : (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
             <div className="w-16 h-16 mx-auto mb-6 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
             <p className="text-lg font-semibold gradient-text mb-2">Analyzing Resume with AI...</p>
             <p className="text-sm text-muted-foreground">Extracting skills and matching roles</p>
