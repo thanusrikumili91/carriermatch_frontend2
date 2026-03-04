@@ -3,18 +3,18 @@ import { useSearchParams, Link } from "react-router-dom";
 import { MapPin, Building2, ExternalLink, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
-const BACKEND_URL = "https://thanusrikumili91-resumeai.hf.space/get_jobs"; // You can create a new endpoint in backend to fetch jobs by role
+const BACKEND_URL = "https://thanusrikumili91-resumeai.hf.space/get_jobs";
 
 interface Job {
-  company: string;
   title: string;
+  company: string;
   location: string;
   link: string;
 }
 
 const JobListings = () => {
   const [searchParams] = useSearchParams();
-  const role = searchParams.get("role") || "Frontend Developer";
+  const role = searchParams.get("role") || "Software Developer";
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,6 @@ const JobListings = () => {
       try {
         const res = await fetch(`${BACKEND_URL}?role=${encodeURIComponent(role)}`);
         const data = await res.json();
-        // Expected format from backend: { jobs: [{company, title, location, link}, ...] }
         setJobs(data.jobs || []);
       } catch (err) {
         console.error("Error fetching jobs:", err);
@@ -41,15 +40,8 @@ const JobListings = () => {
   return (
     <div className="min-h-[85vh] px-4 py-12">
       <div className="max-w-3xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Link
-            to="/mapping"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
-          >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <Link to="/mapping" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8">
             <ArrowLeft className="w-4 h-4" /> Back to Results
           </Link>
 
