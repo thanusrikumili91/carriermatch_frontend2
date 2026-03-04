@@ -24,22 +24,15 @@ const JobListings = () => {
       setError(null);
 
       try {
-        // Call your Hugging Face backend endpoint
-        const res = await fetch("https://thanusrikumili91-resumeai.hf.space/analyze", {
-          method: "POST",
-          headers: {
-            "Accept": "application/json",
-          },
-          body: JSON.stringify({ role }), // send role to backend
-        });
+        const res = await fetch(
+          `https://thanusrikumili91-resumeai.hf.space/jobs?role=${encodeURIComponent(role)}`
+        );
 
-        if (!res.ok) {
-          throw new Error(`HTTP error: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
 
         const data = await res.json();
 
-        if (data?.jobs) {
+        if (data?.jobs && data.jobs.length > 0) {
           setJobs(data.jobs);
         } else {
           setError("No jobs found for this role.");
