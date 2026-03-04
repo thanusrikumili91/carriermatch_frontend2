@@ -1,14 +1,20 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Mapping = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const resumeData = location.state?.resumeData;
 
   if (!resumeData) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold">No Data Found</h1>
-        <p>Please upload a resume first.</p>
+        <h1 className="text-xl font-bold">No Data Found</h1>
+        <button
+          className="mt-4 text-primary underline"
+          onClick={() => navigate("/")}
+        >
+          Upload Resume Again
+        </button>
       </div>
     );
   }
@@ -26,60 +32,47 @@ const Mapping = () => {
         Resume Analysis Result
       </h1>
 
-      {/* Extracted Skills */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Extracted Skills</h2>
-        <div className="flex flex-wrap gap-2">
-          {extracted_skills?.map((skill: string, index: number) => (
-            <span
-              key={index}
-              className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+      <h2 className="text-lg font-semibold mb-2">Extracted Skills</h2>
+      <div className="flex flex-wrap gap-2 mb-6">
+        {extracted_skills?.map((skill: string, index: number) => (
+          <span
+            key={index}
+            className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+          >
+            {skill}
+          </span>
+        ))}
+      </div>
+
+      <h2 className="text-lg font-semibold mb-2">Predicted Role</h2>
+      <p className="text-xl font-bold mb-6 text-primary">
+        {predicted_role}
+      </p>
+
+      <h2 className="text-lg font-semibold mb-2">Similarity Score</h2>
+      <p className="mb-6">{similarity_score}</p>
+
+      <h2 className="text-lg font-semibold mb-4">Job Listings</h2>
+      {Array.isArray(job_listings) &&
+        job_listings.map((job: any, index: number) => (
+          <div
+            key={index}
+            className="mb-4 p-4 border rounded-lg shadow-sm"
+          >
+            <h3 className="font-semibold">{job.title}</h3>
+            <p className="text-sm text-muted-foreground">
+              {job.company} - {job.location}
+            </p>
+            <a
+              href={job.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline text-sm"
             >
-              {skill}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Predicted Role */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Predicted Role</h2>
-        <p className="text-xl font-bold text-primary">
-          {predicted_role}
-        </p>
-      </div>
-
-      {/* Similarity Score */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Similarity Score</h2>
-        <p>{similarity_score}</p>
-      </div>
-
-      {/* Job Listings */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Job Listings</h2>
-
-        {Array.isArray(job_listings) &&
-          job_listings.map((job: any, index: number) => (
-            <div
-              key={index}
-              className="mb-4 p-4 border rounded-lg shadow-sm"
-            >
-              <h3 className="font-semibold">{job.title}</h3>
-              <p className="text-sm text-muted-foreground">
-                {job.company} - {job.location}
-              </p>
-              <a
-                href={job.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline text-sm"
-              >
-                Apply Here
-              </a>
-            </div>
-          ))}
-      </div>
+              Apply Here
+            </a>
+          </div>
+        ))}
     </div>
   );
 };
