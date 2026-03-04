@@ -1,81 +1,93 @@
-import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Briefcase, TrendingUp } from "lucide-react";
 
-interface ResumeData {
-  extracted_skills: string[];
-  predicted_role: string;
-  similarity_score: string;
-  job_listings: {
-    title: string;
-    company: string;
-    location: string;
-    url: string;
-  }[];
-}
-
-interface MappingProps {
-  resumeData: ResumeData;
-}
-
-const Mapping = ({ resumeData }: MappingProps) => {
+const Mapping = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const predictedRole = searchParams.get("role") || "Software Developer";
 
-  if (!resumeData) {
-    return (
-      <div className="p-8">
-        <h1 className="text-xl font-bold">No Data Found</h1>
-        <button
-          className="mt-4 text-primary underline"
-          onClick={() => navigate("/")}
-        >
-          Upload Resume Again
-        </button>
-      </div>
-    );
-  }
+  const [analyzing, setAnalyzing] = useState(true);
+  const [roles, setRoles] = useState<{ name: string; match: number }[]>([]);
 
-  const { extracted_skills, predicted_role, similarity_score, job_listings } = resumeData;
+  useEffect(() => {
+    // Simulate backend match score
+    const timer = setTimeout(() => {
+      setAnalyzing(false);
+      setRoles([{ name: predictedRole, match: 88 }]); // you can replace 88 with a backend score if you have it
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [predictedRole]);
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Resume Analysis Result</h1>
-
-      <h2 className="text-lg font-semibold mb-2">Extracted Skills</h2>
-      <div className="flex flex-wrap gap-2 mb-6">
-        {extracted_skills.map((skill, index) => (
-          <span key={index} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
-            {skill}
-          </span>
-        ))}
-      </div>
-
-      <h2 className="text-lg font-semibold mb-2">Predicted Role</h2>
-      <p className="text-xl font-bold mb-6 text-primary">{predicted_role}</p>
-
-      <h2 className="text-lg font-semibold mb-2">Similarity Score</h2>
-      <p className="mb-6">{similarity_score}</p>
-
-      <h2 className="text-lg font-semibold mb-4">Job Listings</h2>
-      {job_listings.map((job, index) => (
-        <div key={index} className="mb-4 p-4 border rounded-lg shadow-sm">
-          <h3 className="font-semibold">{job.title}</h3>
-          <p className="text-sm text-muted-foreground">{job.company} - {job.location}</p>
-          <a
-            href={job.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline text-sm"
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-2xl">
+        {analyzing ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-20"
           >
-            Apply Here
-          </a>
-        </div>
-      ))}
+            <div className="w-20 h-20 mx-auto mb-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            <p className="text-2xl font-bold gradient-text mb-3">Matching Your Skills with Job Roles...</p>
+            <p className="text-muted-foreground">Our AI is analyzing your profile</p>
+          </motion.div>
+        ) : (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <div className="text-center mb-10">
+              <h1 className="text-3xl font-bold mb-2">
+                Your <span className="gradient-text">Top Match</span>
+              </h1>
+              <p className="text-muted-foreground">Based on your skills and experience</p>
+            </div>
 
-      <button
-        className="mt-8 glow-button px-6 py-2 rounded-lg"
-        onClick={() => navigate("/jobs", { state: { role: predicted_role, job_listings } })}
-      >
-        View Jobs
-      </button>
+            <div className="space-y-4">
+              {roles.map((role, i) => (
+                <motion.div
+                  key={role.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.2, duration: 0.4 }}
+                  className="glass-card glow-border p-6 card-hover"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Briefcase className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h2 className="font-semibold text-foreground">{role.name}</h2>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <TrendingUp className="w-3 h-3" />
+                          <span>{role.match}% Match</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/jobs?role=${encodeURIComponent(role.name)}`)}
+                      className="glow-button px-5 py-2 rounded-lg text-xs font-semibold"
+                    >
+                      View Jobs
+                    </button>
+                  </div>
+
+                  {/* Progress bar */}
+                  <div className="w-full h-2 rounded-full bg-secondary overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${role.match}%` }}
+                      transition={{ delay: i * 0.2 + 0.3, duration: 0.8, ease: "easeOut" }}
+                      className="h-full rounded-full progress-glow"
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 };
