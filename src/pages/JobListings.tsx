@@ -1,48 +1,60 @@
 import { motion } from "framer-motion";
-import { useSearchParams, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { MapPin, Building2, ExternalLink, ArrowLeft } from "lucide-react";
 
-const mockJobs: Record<string, { company: string; title: string; location: string; link: string }[]> = {
-  "Frontend Developer": [
-    { company: "Google", title: "Senior Frontend Engineer", location: "Bangalore, India", link: "#" },
-    { company: "Microsoft", title: "React Developer", location: "Hyderabad, India", link: "#" },
-    { company: "Flipkart", title: "UI Engineer", location: "Bangalore, India", link: "#" },
-    { company: "Razorpay", title: "Frontend Developer", location: "Remote", link: "#" },
-  ],
-  "Data Analyst": [
-    { company: "Amazon", title: "Business Analyst", location: "Chennai, India", link: "#" },
-    { company: "Deloitte", title: "Data Analyst", location: "Mumbai, India", link: "#" },
-    { company: "TCS", title: "Analytics Engineer", location: "Pune, India", link: "#" },
-  ],
-  "UI/UX Designer": [
-    { company: "Swiggy", title: "Product Designer", location: "Bangalore, India", link: "#" },
-    { company: "Zoho", title: "UX Designer", location: "Chennai, India", link: "#" },
-    { company: "Freshworks", title: "UI/UX Designer", location: "Remote", link: "#" },
-  ],
-};
-
 const JobListings = () => {
-  const [searchParams] = useSearchParams();
-  const role = searchParams.get("role") || "Frontend Developer";
-  const jobs = mockJobs[role] || mockJobs["Frontend Developer"];
+  const location = useLocation();
+  const resumeData = location.state?.resumeData;
+
+  if (!resumeData) {
+    return (
+      <div className="min-h-[85vh] flex items-center justify-center px-4">
+        <div className="text-center">
+          <h1 className="text-xl font-bold mb-4">No Data Found</h1>
+          <Link
+            to="/"
+            className="text-primary underline font-medium"
+          >
+            Upload Resume Again
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const { predicted_role, job_listings } = resumeData;
+
+  // Fallback if job_listings is empty
+  const jobs = Array.isArray(job_listings) && job_listings.length > 0
+    ? job_listings
+    : [
+        { title: predicted_role, company: "Multiple Companies", location: "Various Locations", url: "#" }
+      ];
 
   return (
     <div className="min-h-[85vh] px-4 py-12">
       <div className="max-w-3xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <Link to="/mapping" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Link
+            to="/mapping"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
+          >
             <ArrowLeft className="w-4 h-4" /> Back to Results
           </Link>
 
           <div className="mb-10">
             <h1 className="text-3xl font-bold mb-2">
-              Jobs for <span className="gradient-text">{role}</span>
+              Jobs for <span className="gradient-text">{predicted_role}</span>
             </h1>
             <p className="text-muted-foreground">{jobs.length} openings found</p>
           </div>
 
           <div className="space-y-4">
-            {jobs.map((job, i) => (
+            {jobs.map((job: any, i: number) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 15 }}
@@ -63,7 +75,7 @@ const JobListings = () => {
                     </div>
                   </div>
                   <a
-                    href={job.link}
+                    href={job.url || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="glow-button px-5 py-2.5 rounded-lg text-xs font-semibold inline-flex items-center gap-2 shrink-0"
