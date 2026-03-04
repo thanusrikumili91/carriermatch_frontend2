@@ -13,6 +13,8 @@ const ResumeUpload = () => {
   const handleFile = (f: File) => {
     if (f.type === "application/pdf" || f.type.startsWith("image/")) {
       setFile(f);
+    } else {
+      alert("Only PDF or image files allowed.");
     }
   };
 
@@ -24,20 +26,37 @@ const ResumeUpload = () => {
 
   const handleSubmit = async () => {
     if (!file) return;
+
     setLoading(true);
+
     try {
       const formData = new FormData();
       formData.append("file", file);
+
       const response = await fetch(
         "https://thanusrikumili91-resumeai.hf.space/analyze",
-        { method: "POST", body: formData }
+        {
+          method: "POST",
+          body: formData,
+        }
       );
-      if (!response.ok) throw new Error(`Backend Error: ${response.status}`);
+
+      if (!response.ok) {
+        throw new Error(`Backend Error: ${response.status}`);
+      }
+
       const data = await response.json();
-      navigate("/mapping", { state: { resumeData: data.result } });
-    } catch (error) {
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // ✅ Send full JSON to Mapping page
+      navigate("/mapping", { state: { resumeData: data } });
+
+    } catch (error: any) {
       console.error(error);
-      alert("Failed to analyze resume. Please try again.");
+      alert(error.message || "Failed to analyze resume.");
     } finally {
       setLoading(false);
     }
@@ -53,7 +72,9 @@ const ResumeUpload = () => {
       >
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold mb-2">Upload Your Resume</h1>
-          <p className="text-sm text-muted-foreground">Drag & drop or click to upload a PDF or image</p>
+          <p className="text-sm text-muted-foreground">
+            Drag & drop or click to upload a PDF or image
+          </p>
         </div>
 
         {!loading ? (
@@ -63,52 +84,60 @@ const ResumeUpload = () => {
               onDragLeave={() => setDragging(false)}
               onDrop={handleDrop}
               onClick={() => inputRef.current?.click()}
-              className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all ${dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
-              role="button"
-              aria-label="Upload resume file"
+              className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all ${
+                dragging
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/40"
+              }`}
             >
               <Upload className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">Drop your resume here or <span className="text-primary font-medium">browse</span></p>
-              <p className="text-xs text-muted-foreground mt-1">PDF or Image formats</p>
+              <p className="text-sm text-muted-foreground">
+                Drop your resume here or{" "}
+                <span className="text-primary font-medium">browse</span>
+              </p>
               <input
                 ref={inputRef}
                 type="file"
                 accept=".pdf,image/*"
                 className="hidden"
-                onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
-                aria-label="File input"
+                onChange={(e) =>
+                  e.target.files?.[0] && handleFile(e.target.files[0])
+                }
               />
             </div>
 
             {file && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex items-center justify-between glass-card p-4">
+              <div className="mt-4 flex items-center justify-between glass-card p-4">
                 <div className="flex items-center gap-3">
                   <FileText className="w-5 h-5 text-primary" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
+                    <p className="text-sm font-medium">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {(file.size / 1024).toFixed(1)} KB
+                    </p>
                   </div>
                 </div>
-                <button onClick={() => setFile(null)} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Remove file">
+                <button onClick={() => setFile(null)}>
                   <X className="w-4 h-4" />
                 </button>
-              </motion.div>
+              </div>
             )}
 
             <button
               onClick={handleSubmit}
               disabled={!file}
-              className="w-full mt-6 glow-button py-3 rounded-lg font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full mt-6 glow-button py-3 rounded-lg font-semibold text-sm disabled:opacity-40"
             >
               Analyze Resume →
             </button>
           </>
         ) : (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
+          <div className="text-center py-12">
             <div className="w-16 h-16 mx-auto mb-6 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-            <p className="text-lg font-semibold gradient-text mb-2">Analyzing Resume with AI...</p>
-            <p className="text-sm text-muted-foreground">Extracting skills and matching roles</p>
-          </motion.div>
+            <p className="text-lg font-semibold">
+              Analyzing Resume with AI...
+            </p>
+          </div>
         )}
       </motion.div>
     </div>
