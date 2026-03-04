@@ -22,14 +22,39 @@ const ResumeUpload = () => {
     if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!file) return;
     setLoading(true);
 
-    // Mock POST /analyze
-    setTimeout(() => {
-      navigate("/mapping");
-    }, 2500);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Replace this with your Hugging Face backend URL
+      const response = await fetch(
+        "https://thanusrikumili91-resumeai.hf.space/analyze",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Backend Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Backend Response:", data);
+
+      // Optionally, you can store this result in state or context
+      // For now, we'll navigate to /mapping
+      navigate("/mapping", { state: { resumeData: data } });
+    } catch (error) {
+      console.error(error);
+      alert("Failed to analyze resume. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,7 +67,9 @@ const ResumeUpload = () => {
       >
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold mb-2">Upload Your Resume</h1>
-          <p className="text-sm text-muted-foreground">Drag & drop or click to upload a PDF or image</p>
+          <p className="text-sm text-muted-foreground">
+            Drag & drop or click to upload a PDF or image
+          </p>
         </div>
 
         {!loading ? (
@@ -86,7 +113,11 @@ const ResumeUpload = () => {
                     <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
                   </div>
                 </div>
-                <button onClick={() => setFile(null)} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Remove file">
+                <button
+                  onClick={() => setFile(null)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Remove file"
+                >
                   <X className="w-4 h-4" />
                 </button>
               </motion.div>
