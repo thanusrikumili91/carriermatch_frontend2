@@ -6,20 +6,32 @@ import { Briefcase, TrendingUp } from "lucide-react";
 const Mapping = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
   const predictedRole = searchParams.get("role") || "Software Developer";
+  const scoreParam = searchParams.get("score");
+  const missingParam = searchParams.get("missing");
 
   const [analyzing, setAnalyzing] = useState(true);
   const [roles, setRoles] = useState<{ name: string; match: number }[]>([]);
+  const [missingSkills, setMissingSkills] = useState<string[]>([]);
 
   useEffect(() => {
-    // Simulate backend match score
-    const timer = setTimeout(() => {
-      setAnalyzing(false);
-      setRoles([{ name: predictedRole, match: 88 }]); // you can replace 88 with a backend score if you have it
-    }, 2000);
+    const similarityScore = scoreParam ? Number(scoreParam) : 0.0;
+    const matchPercentage = Math.round(similarityScore * 100);
 
-    return () => clearTimeout(timer);
-  }, [predictedRole]);
+    let parsedMissing: string[] = [];
+    if (missingParam) {
+      try {
+        parsedMissing = JSON.parse(decodeURIComponent(missingParam));
+      } catch (err) {
+        console.error("Error parsing missing skills:", err);
+      }
+    }
+
+    setRoles([{ name: predictedRole, match: matchPercentage }]);
+    setMissingSkills(parsedMissing);
+    setAnalyzing(false);
+  }, [predictedRole, scoreParam, missingParam]);
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
@@ -31,16 +43,26 @@ const Mapping = () => {
             className="text-center py-20"
           >
             <div className="w-20 h-20 mx-auto mb-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-            <p className="text-2xl font-bold gradient-text mb-3">Matching Your Skills with Job Roles...</p>
-            <p className="text-muted-foreground">Our AI is analyzing your profile</p>
+            <p className="text-2xl font-bold gradient-text mb-3">
+              Matching Your Skills with Job Roles...
+            </p>
+            <p className="text-muted-foreground">
+              Our AI is analyzing your profile
+            </p>
           </motion.div>
         ) : (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <div className="text-center mb-10">
               <h1 className="text-3xl font-bold mb-2">
                 Your <span className="gradient-text">Top Match</span>
               </h1>
-              <p className="text-muted-foreground">Based on your skills and experience</p>
+              <p className="text-muted-foreground">
+                Based on your skills and experience
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -58,30 +80,60 @@ const Mapping = () => {
                         <Briefcase className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <h2 className="font-semibold text-foreground">{role.name}</h2>
+                        <h2 className="font-semibold text-foreground">
+                          {role.name}
+                        </h2>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <TrendingUp className="w-3 h-3" />
                           <span>{role.match}% Match</span>
                         </div>
                       </div>
                     </div>
+
                     <button
-                      onClick={() => navigate(`/jobs?role=${encodeURIComponent(role.name)}`)}
+                      onClick={() =>
+                        navigate(
+                          `/jobs?role=${encodeURIComponent(role.name)}`
+                        )
+                      }
                       className="glow-button px-5 py-2 rounded-lg text-xs font-semibold"
                     >
                       View Jobs
                     </button>
                   </div>
 
-                  {/* Progress bar */}
+                  {/* Progress Bar */}
                   <div className="w-full h-2 rounded-full bg-secondary overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${role.match}%` }}
-                      transition={{ delay: i * 0.2 + 0.3, duration: 0.8, ease: "easeOut" }}
+                      transition={{
+                        delay: i * 0.2 + 0.3,
+                        duration: 0.8,
+                        ease: "easeOut",
+                      }}
                       className="h-full rounded-full progress-glow"
                     />
                   </div>
+
+                  {/* Missing Skills Section */}
+                  {missingSkills.length > 0 && (
+                    <div className="mt-6">
+                      <p className="text-sm font-semibold text-red-500 mb-2">
+                        Missing Skills
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {missingSkills.map((skill, index) => (
+                          <span
+                            key={index}
+                            className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>
