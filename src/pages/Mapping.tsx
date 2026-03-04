@@ -11,7 +11,7 @@ const Mapping = () => {
         <h1 className="text-xl font-bold">No Data Found</h1>
         <button
           className="mt-4 text-primary underline"
-          onClick={() => navigate("/upload")}
+          onClick={() => navigate("/")}
         >
           Upload Resume Again
         </button>
@@ -19,7 +19,15 @@ const Mapping = () => {
     );
   }
 
-  const { extracted_skills, predicted_role, similarity_score, job_listings } = resumeData;
+  const { extracted_skills, predicted_role, similarity_score, top_role_matches } = resumeData;
+
+  // Dynamic jobs based on predicted role
+  const job_listings = top_role_matches?.map((r: any) => ({
+    title: r.role,
+    company: "Multiple Companies",
+    location: "Various Locations",
+    url: "#",
+  })) || [];
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -43,8 +51,8 @@ const Mapping = () => {
       <h2 className="text-lg font-semibold mb-2">Similarity Score</h2>
       <p className="mb-6">{similarity_score}</p>
 
-      <h2 className="text-lg font-semibold mb-4">Job Listings</h2>
-      {job_listings.map((job: any, index: number) => (
+      <h2 className="text-lg font-semibold mb-4">Top Job Matches</h2>
+      {job_listings.map((job, index) => (
         <div key={index} className="mb-4 p-4 border rounded-lg shadow-sm">
           <h3 className="font-semibold">{job.title}</h3>
           <p className="text-sm text-muted-foreground">
@@ -56,7 +64,7 @@ const Mapping = () => {
             rel="noopener noreferrer"
             className="text-primary underline text-sm"
           >
-            Apply Here
+            View Jobs
           </a>
         </div>
       ))}
