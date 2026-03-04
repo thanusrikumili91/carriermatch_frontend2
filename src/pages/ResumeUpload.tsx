@@ -28,32 +28,19 @@ const ResumeUpload = () => {
     if (!file) return;
 
     setLoading(true);
-
     try {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(
-        "https://thanusrikumili91-resumeai.hf.space/analyze",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const response = await fetch("http://localhost:7860/analyze", {
+        method: "POST",
+        body: formData,
+      });
 
-      if (!response.ok) {
-        throw new Error(`Backend Error: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Backend Error: ${response.status}`);
       const data = await response.json();
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      // ✅ Send full JSON to Mapping page
       navigate("/mapping", { state: { resumeData: data } });
-
     } catch (error: any) {
       console.error(error);
       alert(error.message || "Failed to analyze resume.");
