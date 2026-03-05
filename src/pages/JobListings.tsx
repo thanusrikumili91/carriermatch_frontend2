@@ -10,7 +10,9 @@ interface Job {
   link: string;
 }
 
+// ------------------------------
 // Static fallback jobs per role
+// ------------------------------
 const STATIC_JOBS: Record<string, Job[]> = {
   "Software Developer": [
     { title: "Software Developer I", company: "Tech Solutions Ltd", location: "London, UK", link: "#" },
@@ -54,6 +56,7 @@ const JobListings = () => {
       setLoading(true);
 
       try {
+        // Try API call first
         const res = await fetch(
           `https://thanusrikumili91-resumeai.hf.space/jobs?role=${encodeURIComponent(role)}`
         );
@@ -62,7 +65,7 @@ const JobListings = () => {
 
         const data = await res.json();
 
-        // Use API jobs if returned, otherwise fallback
+        // Use API jobs if returned, otherwise fallback to static
         if (data?.jobs && data.jobs.length > 0) {
           setJobs(data.jobs);
         } else {
@@ -70,7 +73,7 @@ const JobListings = () => {
         }
       } catch (err) {
         console.error("Job fetch failed:", err);
-        // On error, use static fallback
+        // Fallback to static jobs
         setJobs(STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]);
       } finally {
         setLoading(false);
