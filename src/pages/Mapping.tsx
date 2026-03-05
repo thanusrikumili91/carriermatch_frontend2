@@ -7,8 +7,11 @@ const Mapping = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Get role & profile links from query params or fallback
-  const predictedRole = searchParams.get("role")?.trim() || "";
+  // Get role & profile links from query params
+  let roleParam = searchParams.get("role");
+  // If role is undefined, null, or empty string, default to "Software Developer"
+  const predictedRole = roleParam && roleParam.trim() !== "" ? roleParam.trim() : "Software Developer";
+
   const scoreParam = searchParams.get("score");
   const missingParam = searchParams.get("missing");
   const githubParam = searchParams.get("github")?.trim();
@@ -33,17 +36,13 @@ const Mapping = () => {
 
     // Generate random match percentage if score is missing or zero
     const baseScore = scoreParam ? Number(scoreParam) : 0;
-    const randomPercentage = Math.floor(Math.random() * 41) + 60; // 60-100%
-    const matchPercentage = baseScore > 0 ? Math.round(baseScore * 100) : randomPercentage;
+    const matchPercentage =
+      baseScore > 0 ? Math.round(baseScore * 100) : Math.floor(Math.random() * 41) + 60; // 60-100%
 
-    // If no predicted role, add "Software Developer" by default
-    const roleList = predictedRole
-      ? [{ name: predictedRole, match: matchPercentage }]
-      : [{ name: "Software Developer", match: matchPercentage }];
+    // Always ensure at least one role
+    setRoles([{ name: predictedRole, match: matchPercentage }]);
 
-    setRoles(roleList);
-
-    // Set GitHub/LinkedIn profiles with static fallback
+    // Profiles (GitHub static fallback)
     setProfiles({
       github: githubParam || "https://github.com/thanusrikumili91/CarRentalSystem",
       linkedin: linkedinParam || "https://www.linkedin.com/in/thanusrikumili91/",
@@ -56,32 +55,20 @@ const Mapping = () => {
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-2xl">
         {analyzing ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-20"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
             <div className="w-20 h-20 mx-auto mb-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
             <p className="text-2xl font-bold gradient-text mb-3">
               Matching Your Skills with Job Roles...
             </p>
-            <p className="text-muted-foreground">
-              Our AI is analyzing your profile
-            </p>
+            <p className="text-muted-foreground">Our AI is analyzing your profile</p>
           </motion.div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <div className="text-center mb-10">
               <h1 className="text-3xl font-bold mb-2">
                 Your <span className="gradient-text">Top Match</span>
               </h1>
-              <p className="text-muted-foreground">
-                Based on your skills and experience
-              </p>
+              <p className="text-muted-foreground">Based on your skills and experience</p>
             </div>
 
             <div className="space-y-4">
@@ -108,9 +95,7 @@ const Mapping = () => {
                     </div>
 
                     <button
-                      onClick={() =>
-                        navigate(`/jobs?role=${encodeURIComponent(role.name)}`)
-                      }
+                      onClick={() => navigate(`/jobs?role=${encodeURIComponent(role.name)}`)}
                       className="glow-button px-5 py-2 rounded-lg text-xs font-semibold"
                     >
                       View Jobs
@@ -122,11 +107,7 @@ const Mapping = () => {
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${role.match}%` }}
-                      transition={{
-                        delay: i * 0.2 + 0.3,
-                        duration: 0.8,
-                        ease: "easeOut",
-                      }}
+                      transition={{ delay: i * 0.2 + 0.3, duration: 0.8, ease: "easeOut" }}
                       className="h-full rounded-full progress-glow"
                     />
                   </div>
@@ -134,15 +115,10 @@ const Mapping = () => {
                   {/* Missing Skills Section */}
                   {missingSkills.length > 0 && (
                     <div className="mt-6">
-                      <p className="text-sm font-semibold text-red-500 mb-2">
-                        Missing Skills
-                      </p>
+                      <p className="text-sm font-semibold text-red-500 mb-2">Missing Skills</p>
                       <div className="flex flex-wrap gap-2">
                         {missingSkills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs"
-                          >
+                          <span key={index} className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">
                             {skill}
                           </span>
                         ))}
