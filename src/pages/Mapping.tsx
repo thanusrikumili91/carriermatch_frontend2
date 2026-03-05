@@ -7,13 +7,10 @@ const Mapping = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Get role & profile links from query params
-  let roleParam = searchParams.get("role");
-  // If role is undefined, null, or empty string, default to "Software Developer"
+  // Always default to "Software Developer"
   const predictedRole = "Software Developer";
 
   const scoreParam = searchParams.get("score");
-  const missingParam = searchParams.get("missing");
   const githubParam = searchParams.get("github")?.trim();
   const linkedinParam = searchParams.get("linkedin")?.trim();
 
@@ -23,18 +20,12 @@ const Mapping = () => {
   const [profiles, setProfiles] = useState<{ github?: string; linkedin?: string }>({});
 
   useEffect(() => {
-    // Parse missing skills
-    let parsedMissing: string[] = [];
-    if (missingParam) {
-      try {
-        parsedMissing = JSON.parse(decodeURIComponent(missingParam));
-      } catch (err) {
-        console.error("Error parsing missing skills:", err);
-      }
-    }
-    setMissingSkills(parsedMissing);
+    // Static missing skills for Software Developer
+    const staticMissingSkills = ["Django / Spring Boot", "Docker", "AWS / Azure", "Unit Testing", "CI/CD"];
 
-    // Generate random match percentage if score is missing or zero
+    setMissingSkills(staticMissingSkills);
+
+    // Generate random match percentage if score is missing
     const baseScore = scoreParam ? Number(scoreParam) : 0;
     const matchPercentage =
       baseScore > 0 ? Math.round(baseScore * 100) : Math.floor(Math.random() * 41) + 60; // 60-100%
@@ -42,14 +33,14 @@ const Mapping = () => {
     // Always ensure at least one role
     setRoles([{ name: predictedRole, match: matchPercentage }]);
 
-    // Profiles (GitHub static fallback)
+    // Profiles (GitHub / LinkedIn fallback)
     setProfiles({
       github: githubParam || "https://github.com/thanusrikumili91/CarRentalSystem",
       linkedin: linkedinParam || "https://www.linkedin.com/in/thanusrikumili91/",
     });
 
     setAnalyzing(false);
-  }, [predictedRole, scoreParam, missingParam, githubParam, linkedinParam]);
+  }, [scoreParam, githubParam, linkedinParam]);
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
@@ -57,9 +48,7 @@ const Mapping = () => {
         {analyzing ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
             <div className="w-20 h-20 mx-auto mb-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-            <p className="text-2xl font-bold gradient-text mb-3">
-              Matching Your Skills with Job Roles...
-            </p>
+            <p className="text-2xl font-bold gradient-text mb-3">Matching Your Skills with Job Roles...</p>
             <p className="text-muted-foreground">Our AI is analyzing your profile</p>
           </motion.div>
         ) : (
@@ -162,4 +151,3 @@ const Mapping = () => {
 };
 
 export default Mapping;
-
