@@ -7,12 +7,12 @@ const Mapping = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Default to "Software Developer" if no role is predicted
-  const predictedRole = searchParams.get("role")?.trim() || "Software Developer";
+  // Get role & profile links from query params or fallback
+  const predictedRole = searchParams.get("role")?.trim() || "";
   const scoreParam = searchParams.get("score");
   const missingParam = searchParams.get("missing");
-  const githubParam = searchParams.get("github");
-  const linkedinParam = searchParams.get("linkedin");
+  const githubParam = searchParams.get("github")?.trim();
+  const linkedinParam = searchParams.get("linkedin")?.trim();
 
   const [analyzing, setAnalyzing] = useState(true);
   const [roles, setRoles] = useState<{ name: string; match: number }[]>([]);
@@ -33,21 +33,20 @@ const Mapping = () => {
 
     // Generate random match percentage if score is missing or zero
     const baseScore = scoreParam ? Number(scoreParam) : 0;
-    const matchPercentage =
-      baseScore > 0
-        ? Math.round(baseScore * 100)
-        : Math.floor(Math.random() * 41) + 60; // 60-100%
+    const randomPercentage = Math.floor(Math.random() * 41) + 60; // 60-100%
+    const matchPercentage = baseScore > 0 ? Math.round(baseScore * 100) : randomPercentage;
 
-    // Role list
-    const roleList = [{ name: predictedRole, match: matchPercentage }];
+    // If no predicted role, add "Software Developer" by default
+    const roleList = predictedRole
+      ? [{ name: predictedRole, match: matchPercentage }]
+      : [{ name: "Software Developer", match: matchPercentage }];
+
     setRoles(roleList);
 
-    // Profiles (GitHub static fallback)
+    // Set GitHub/LinkedIn profiles with static fallback
     setProfiles({
-      github: githubParam
-        ? decodeURIComponent(githubParam)
-        : "https://github.com/thanusrikumili91/CarRentalSystem",
-      linkedin: linkedinParam ? decodeURIComponent(linkedinParam) : undefined,
+      github: githubParam || "https://github.com/thanusrikumili91/CarRentalSystem",
+      linkedin: linkedinParam || "https://www.linkedin.com/in/thanusrikumili91/",
     });
 
     setAnalyzing(false);
