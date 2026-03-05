@@ -16,9 +16,7 @@ const Mapping = () => {
   const [missingSkills, setMissingSkills] = useState<string[]>([]);
 
   useEffect(() => {
-    const similarityScore = scoreParam ? Number(scoreParam) : 0.0;
-    const matchPercentage = Math.round(similarityScore * 100);
-
+    // Parse missing skills
     let parsedMissing: string[] = [];
     if (missingParam) {
       try {
@@ -27,9 +25,18 @@ const Mapping = () => {
         console.error("Error parsing missing skills:", err);
       }
     }
-
-    setRoles([{ name: predictedRole, match: matchPercentage }]);
     setMissingSkills(parsedMissing);
+
+    // Generate random match percentage if score is missing or zero
+    const baseScore = scoreParam ? Number(scoreParam) : 0;
+    const matchPercentage = baseScore > 0
+      ? Math.round(baseScore * 100)
+      : Math.floor(Math.random() * 41) + 60; // random between 60-100%
+
+    // If you have multiple roles in future, generate slightly different random percentages
+    const roleList = [{ name: predictedRole, match: matchPercentage }];
+    setRoles(roleList);
+
     setAnalyzing(false);
   }, [predictedRole, scoreParam, missingParam]);
 
