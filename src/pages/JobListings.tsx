@@ -19,38 +19,37 @@ const CITIES = ["Hyderabad", "Bangalore", "Chennai", "Pune", "Mumbai"];
 // ------------------------------
 const STATIC_JOBS: Record<string, Job[]> = {
   "Software Developer": [
-    { title: "Software Developer I", company: "Apple", location: "Hyderabad", salary: "₹50,000 - ₹80,000", link: "#" },
-    { title: "Junior Developer", company: "IBM", location: "Hyderabad", salary: "₹55,000 - ₹90,000", link: "#" },
-    { title: "Fullstack Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "#" },
-    { title: "Backend Developer", company: "Microsoft", location: "Hyderabad", salary: "₹60,000 - ₹95,000", link: "#" },
-    { title: "Frontend Developer", company: "Infosys", location: "Hyderabad", salary: "₹50,000 - ₹75,000", link: "#" },
+    { title: "Software Developer I", company: "Apple", location: "Hyderabad", salary: "₹50,000 - ₹80,000", link: "https://jobs.apple.com/en-in/search?location=hyderabad-HYD" },
+    { title: "Junior Developer", company: "IBM", location: "Hyderabad", salary: "₹55,000 - ₹90,000", link: "https://www.ibm.com/careers/search?location=Hyderabad" },
+    { title: "Fullstack Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "https://careers.google.com/jobs/results/?location=Hyderabad" },
+    { title: "Backend Developer", company: "Microsoft", location: "Hyderabad", salary: "₹60,000 - ₹95,000", link: "https://jobs.careers.microsoft.com/global/en/search?q=Hyderabad" },
+    { title: "Frontend Developer", company: "Infosys", location: "Hyderabad", salary: "₹50,000 - ₹75,000", link: "https://career.infosys.com/joblist?location=Hyderabad" },
   ],
 
   "Data Architect": [
-    { title: "Data Architect", company: "Google", location: "Hyderabad", salary: "₹80,000 - ₹100,000", link: "https://www.naukri.com/google-jobs-in-hyderabad-secunderabad" },
-    { title: "Senior Data Engineer", company: "IBM", location: "Hyderabad", salary: "₹70,000 - ₹95,000", link: "#" },
-    { title: "Big Data Architect", company: "Microsoft", location: "Hyderabad", salary: "₹85,000 - ₹100,000", link: "#" },
-    { title: "ETL Developer", company: "Infosys", location: "Hyderabad", salary: "₹60,000 - ₹80,000", link: "#" },
-    { title: "Database Designer", company: "Apple", location: "Hyderabad", salary: "₹65,000 - ₹90,000", link: "#" },
+    { title: "Data Architect", company: "Google", location: "Hyderabad", salary: "₹80,000 - ₹100,000", link: "https://careers.google.com/jobs/results/?location=Hyderabad" },
+    { title: "Senior Data Engineer", company: "IBM", location: "Hyderabad", salary: "₹70,000 - ₹95,000", link: "https://www.ibm.com/careers/search?location=Hyderabad" },
+    { title: "Big Data Architect", company: "Microsoft", location: "Hyderabad", salary: "₹85,000 - ₹100,000", link: "https://jobs.careers.microsoft.com/global/en/search?q=Hyderabad" },
+    { title: "ETL Developer", company: "Infosys", location: "Hyderabad", salary: "₹60,000 - ₹80,000", link: "https://career.infosys.com/joblist?location=Hyderabad" },
+    { title: "Database Designer", company: "Apple", location: "Hyderabad", salary: "₹65,000 - ₹90,000", link: "https://jobs.apple.com/en-in/search?location=hyderabad-HYD" },
   ],
 
   "Backend Developer": [
-    { title: "Backend Developer", company: "Microsoft", location: "Hyderabad", salary: "₹65,000 - ₹95,000", link: "#" },
-    { title: "API Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "#" },
-    { title: "Python Developer", company: "IBM", location: "Hyderabad", salary: "₹60,000 - ₹85,000", link: "#" },
-    { title: "Node.js Developer", company: "Apple", location: "Hyderabad", salary: "₹65,000 - ₹90,000", link: "#" },
-    { title: "Java Developer", company: "Infosys", location: "Hyderabad", salary: "₹55,000 - ₹80,000", link: "#" },
+    { title: "Backend Developer", company: "Microsoft", location: "Hyderabad", salary: "₹65,000 - ₹95,000", link: "https://jobs.careers.microsoft.com/global/en/search?q=Hyderabad" },
+    { title: "API Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "https://careers.google.com/jobs/results/?location=Hyderabad" },
+    { title: "Python Developer", company: "IBM", location: "Hyderabad", salary: "₹60,000 - ₹85,000", link: "https://www.ibm.com/careers/search?location=Hyderabad" },
+    { title: "Node.js Developer", company: "Apple", location: "Hyderabad", salary: "₹65,000 - ₹90,000", link: "https://jobs.apple.com/en-in/search?location=hyderabad-HYD" },
+    { title: "Java Developer", company: "Infosys", location: "Hyderabad", salary: "₹55,000 - ₹80,000", link: "https://career.infosys.com/joblist?location=Hyderabad" },
   ],
 
   "Frontend Engineer": [
-    { title: "Frontend Engineer", company: "Apple", location: "Hyderabad", salary: "₹60,000 - ₹90,000", link: "#" },
-    { title: "React Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "#" },
-    { title: "UI Engineer", company: "Microsoft", location: "Hyderabad", salary: "₹65,000 - ₹95,000", link: "#" },
-    { title: "Frontend Developer", company: "IBM", location: "Hyderabad", salary: "₹60,000 - ₹85,000", link: "#" },
-    { title: "Vue.js Developer", company: "Infosys", location: "Hyderabad", salary: "₹55,000 - ₹75,000", link: "#" },
+    { title: "Frontend Engineer", company: "Apple", location: "Hyderabad", salary: "₹60,000 - ₹90,000", link: "https://jobs.apple.com/en-in/search?location=hyderabad-HYD" },
+    { title: "React Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "https://careers.google.com/jobs/results/?location=Hyderabad" },
+    { title: "UI Engineer", company: "Microsoft", location: "Hyderabad", salary: "₹65,000 - ₹95,000", link: "https://jobs.careers.microsoft.com/global/en/search?q=Hyderabad" },
+    { title: "Frontend Developer", company: "IBM", location: "Hyderabad", salary: "₹60,000 - ₹85,000", link: "https://www.ibm.com/careers/search?location=Hyderabad" },
+    { title: "Vue.js Developer", company: "Infosys", location: "Hyderabad", salary: "₹55,000 - ₹75,000", link: "https://career.infosys.com/joblist?location=Hyderabad" },
   ],
 };
-
 const JobListings = () => {
   const [searchParams] = useSearchParams();
   const role = searchParams.get("role") || "Software Developer";
@@ -200,3 +199,4 @@ const JobListings = () => {
 };
 
 export default JobListings;
+
