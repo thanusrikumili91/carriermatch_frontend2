@@ -10,7 +10,7 @@ const Mapping = () => {
   // Get role & profile links from query params
   let roleParam = searchParams.get("role");
   // If role is undefined, null, or empty string, default to "Software Developer"
-  const predictedRole = roleParam && roleParam.trim() !== "" ? roleParam.trim() : "Software Developer";
+  const predictedRole = "Software Developer";
 
   const scoreParam = searchParams.get("score");
   const missingParam = searchParams.get("missing");
@@ -162,3 +162,4 @@ const Mapping = () => {
 };
 
 export default Mapping;
+
