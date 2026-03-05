@@ -11,6 +11,9 @@ interface Job {
   link: string;
 }
 
+// Cities list
+const CITIES = ["Hyderabad", "Bangalore", "Chennai", "Pune", "Mumbai"];
+
 // ------------------------------
 // Static fallback jobs per role
 // ------------------------------
@@ -52,6 +55,7 @@ const JobListings = () => {
   const [searchParams] = useSearchParams();
   const role = searchParams.get("role") || "Software Developer";
 
+  const [city, setCity] = useState("Hyderabad");
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +65,7 @@ const JobListings = () => {
 
       try {
         const res = await fetch(
-          `https://thanusrikumili91-resumeai.hf.space/jobs?role=${encodeURIComponent(role)}`
+          `https://thanusrikumili91-resumeai.hf.space/jobs?role=${encodeURIComponent(role)}&city=${encodeURIComponent(city)}`
         );
 
         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
@@ -71,18 +75,34 @@ const JobListings = () => {
         if (data?.jobs && data.jobs.length > 0) {
           setJobs(data.jobs);
         } else {
-          setJobs(STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]);
+          // Update location dynamically with selected city
+          const updatedJobs = (STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]).map(
+            (job) => ({
+              ...job,
+              location: city,
+            })
+          );
+
+          setJobs(updatedJobs);
         }
       } catch (err) {
         console.error("Job fetch failed:", err);
-        setJobs(STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]);
+
+        const updatedJobs = (STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]).map(
+          (job) => ({
+            ...job,
+            location: city,
+          })
+        );
+
+        setJobs(updatedJobs);
       } finally {
         setLoading(false);
       }
     };
 
     fetchJobs();
-  }, [role]);
+  }, [role, city]);
 
   return (
     <div className="min-h-[85vh] px-4 py-12">
@@ -99,14 +119,35 @@ const JobListings = () => {
             <ArrowLeft className="w-4 h-4" /> Back to Results
           </Link>
 
+          {/* City Selector */}
+          <div className="mb-6">
+            <label className="text-sm text-muted-foreground mr-3">
+              Select City:
+            </label>
+            <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="px-3 py-2 rounded-md bg-background border border-muted text-sm"
+            >
+              {CITIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="mb-10">
             <h1 className="text-3xl font-bold mb-2">
               Jobs for <span className="gradient-text">{role}</span>
             </h1>
+
             {loading ? (
               <p className="text-muted-foreground">Loading job postings...</p>
             ) : (
-              <p className="text-muted-foreground">{jobs.length} openings found</p>
+              <p className="text-muted-foreground">
+                {jobs.length} openings found in {city}
+              </p>
             )}
           </div>
 
@@ -121,7 +162,9 @@ const JobListings = () => {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="font-semibold text-foreground text-lg">{job.title}</h2>
+                    <h2 className="font-semibold text-foreground text-lg">
+                      {job.title}
+                    </h2>
 
                     <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
