@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { MapPin, Building2, ExternalLink, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { MapPin, Building2, ExternalLink, ArrowLeft, Download } from "lucide-react";
+import { useState, useRef } from "react";
+import html2pdf from "html2pdf.js";
 
 interface Job {
   title: string;
@@ -47,8 +48,29 @@ const JobListings = () => {
   const [typeFilter, setTypeFilter] = useState("All");
   const [salaryFilter, setSalaryFilter] = useState(0);
 
-  // Filter logic
+  const pdfRef = useRef<HTMLDivElement>(null);
+
+  // PDF Generator
+  const downloadPDF = () => {
+
+    if (!pdfRef.current) return;
+
+    const element = pdfRef.current;
+
+    const options = {
+      margin: 0.5,
+      filename: "data-science-jobs.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+    };
+
+    html2pdf().set(options).from(element).save();
+  };
+
+  // Filter Logic
   const filteredJobs = STATIC_JOBS.filter((job) => {
+
     const locationMatch =
       locationFilter === "All" || job.location === locationFilter;
 
@@ -59,9 +81,11 @@ const JobListings = () => {
       salaryFilter === 0 || job.salary >= salaryFilter;
 
     return locationMatch && typeMatch && salaryMatch;
+
   });
 
   return (
+
     <div className="min-h-[85vh] px-4 py-12">
 
       <div className="max-w-3xl mx-auto">
@@ -70,17 +94,28 @@ const JobListings = () => {
           to="/mapping"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to Results
+          <ArrowLeft className="w-4 h-4" />
+          Back to Results
         </Link>
 
         <h1 className="text-3xl font-bold mb-6">
-          <span className="gradient-text">Data Science Job Listings</span>
+          Data Science Job Listings
         </h1>
 
+        {/* Download PDF Button */}
+
+        <button
+          onClick={downloadPDF}
+          className="flex items-center gap-2 mb-6 px-4 py-2 bg-blue-600 text-white rounded-lg"
+        >
+          <Download className="w-4 h-4"/>
+          Download PDF
+        </button>
+
         {/* Filters */}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
 
-          {/* Location Filter */}
           <select
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
@@ -91,7 +126,6 @@ const JobListings = () => {
             ))}
           </select>
 
-          {/* Company Type */}
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
@@ -102,7 +136,6 @@ const JobListings = () => {
             ))}
           </select>
 
-          {/* Salary Filter */}
           <select
             value={salaryFilter}
             onChange={(e) => setSalaryFilter(Number(e.target.value))}
@@ -120,65 +153,74 @@ const JobListings = () => {
           {filteredJobs.length} openings found
         </p>
 
-        {/* Job Cards */}
-        <div className="space-y-4">
-          {filteredJobs.map((job, i) => (
+        {/* PDF Content */}
 
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="glass-card glow-border p-6"
-            >
+        <div ref={pdfRef}>
 
-              <div className="flex flex-col sm:flex-row justify-between gap-4">
+          <div className="space-y-4">
 
-                <div>
+            {filteredJobs.map((job, i) => (
 
-                  <h2 className="text-lg font-semibold">
-                    {job.title}
-                  </h2>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="glass-card glow-border p-6"
+              >
 
-                  <div className="flex gap-4 text-sm text-muted-foreground mt-2">
+                <div className="flex flex-col sm:flex-row justify-between gap-4">
 
-                    <span className="flex items-center gap-1">
-                      <Building2 className="w-3.5 h-3.5" />
-                      {job.company}
-                    </span>
+                  <div>
 
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {job.location}
-                    </span>
+                    <h2 className="text-lg font-semibold">
+                      {job.title}
+                    </h2>
 
-                    <span className="text-green-500 font-medium">
-                      ₹{job.salary}
-                    </span>
+                    <div className="flex gap-4 text-sm text-muted-foreground mt-2">
+
+                      <span className="flex items-center gap-1">
+                        <Building2 className="w-3.5 h-3.5"/>
+                        {job.company}
+                      </span>
+
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5"/>
+                        {job.location}
+                      </span>
+
+                      <span className="text-green-500 font-medium">
+                        ₹{job.salary}
+                      </span>
+
+                    </div>
 
                   </div>
 
+                  <a
+                    href={job.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 bg-black text-white"
+                  >
+                    Apply
+                    <ExternalLink className="w-3.5 h-3.5"/>
+                  </a>
+
                 </div>
 
-                <a
-                  href={job.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="glow-button px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2"
-                >
-                  Apply <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+              </motion.div>
 
-              </div>
+            ))}
 
-            </motion.div>
+          </div>
 
-          ))}
         </div>
 
       </div>
 
     </div>
+
   );
 };
 
