@@ -10,18 +10,48 @@ interface Job {
   link: string;
 }
 
+// Static fallback jobs per role
+const STATIC_JOBS: Record<string, Job[]> = {
+  "Software Developer": [
+    { title: "Software Developer I", company: "Tech Solutions Ltd", location: "London, UK", link: "#" },
+    { title: "Junior Developer", company: "CodeCraft", location: "Manchester, UK", link: "#" },
+    { title: "Fullstack Developer", company: "NextGen Apps", location: "Birmingham, UK", link: "#" },
+    { title: "Backend Developer", company: "Digital Works", location: "Leeds, UK", link: "#" },
+    { title: "Frontend Developer", company: "Web Innovations", location: "Glasgow, UK", link: "#" },
+  ],
+  "Data Architect": [
+    { title: "Data Architect", company: "Data Insights", location: "London, UK", link: "#" },
+    { title: "Senior Data Engineer", company: "Analytica", location: "Manchester, UK", link: "#" },
+    { title: "Big Data Architect", company: "Tech Data Ltd", location: "Birmingham, UK", link: "#" },
+    { title: "ETL Developer", company: "InfoTech Solutions", location: "Glasgow, UK", link: "#" },
+    { title: "Database Designer", company: "SmartData Labs", location: "Leeds, UK", link: "#" },
+  ],
+  "Backend Developer": [
+    { title: "Backend Developer", company: "Digital Works", location: "London, UK", link: "#" },
+    { title: "API Developer", company: "Tech Solutions Ltd", location: "Manchester, UK", link: "#" },
+    { title: "Python Developer", company: "CodeCraft", location: "Birmingham, UK", link: "#" },
+    { title: "Node.js Developer", company: "NextGen Apps", location: "Glasgow, UK", link: "#" },
+    { title: "Java Developer", company: "Web Innovations", location: "Leeds, UK", link: "#" },
+  ],
+  "Frontend Engineer": [
+    { title: "Frontend Engineer", company: "Web Innovations", location: "London, UK", link: "#" },
+    { title: "React Developer", company: "NextGen Apps", location: "Manchester, UK", link: "#" },
+    { title: "UI Engineer", company: "Tech Solutions Ltd", location: "Birmingham, UK", link: "#" },
+    { title: "Frontend Developer", company: "Digital Works", location: "Glasgow, UK", link: "#" },
+    { title: "Vue.js Developer", company: "CodeCraft", location: "Leeds, UK", link: "#" },
+  ],
+};
+
 const JobListings = () => {
   const [searchParams] = useSearchParams();
   const role = searchParams.get("role") || "Software Developer";
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
-      setError(null);
 
       try {
         const res = await fetch(
@@ -32,14 +62,16 @@ const JobListings = () => {
 
         const data = await res.json();
 
+        // Use API jobs if returned, otherwise fallback
         if (data?.jobs && data.jobs.length > 0) {
           setJobs(data.jobs);
         } else {
-          setError("No jobs found for this role.");
+          setJobs(STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]);
         }
-      } catch (err: any) {
-        console.error(err);
-        setError(err.message || "Error fetching jobs.");
+      } catch (err) {
+        console.error("Job fetch failed:", err);
+        // On error, use static fallback
+        setJobs(STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]);
       } finally {
         setLoading(false);
       }
@@ -51,7 +83,11 @@ const JobListings = () => {
   return (
     <div className="min-h-[85vh] px-4 py-12">
       <div className="max-w-3xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <Link
             to="/mapping"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
@@ -65,8 +101,6 @@ const JobListings = () => {
             </h1>
             {loading ? (
               <p className="text-muted-foreground">Loading job postings...</p>
-            ) : error ? (
-              <p className="text-red-500">{error}</p>
             ) : (
               <p className="text-muted-foreground">{jobs.length} openings found</p>
             )}
