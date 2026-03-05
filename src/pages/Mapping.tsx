@@ -7,7 +7,6 @@ const Mapping = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Default role
   const predictedRole = "Data Scientist";
 
   const scoreParam = searchParams.get("score");
@@ -19,7 +18,6 @@ const Mapping = () => {
   const [missingSkills, setMissingSkills] = useState<string[]>([]);
   const [profiles, setProfiles] = useState<{ github?: string; linkedin?: string }>({});
 
-  // Data Science Jobs
   const suggestedJobs = [
     {
       title: "Data Scientist",
@@ -41,7 +39,6 @@ const Mapping = () => {
     },
   ];
 
-  // Data Science Projects
   const projects = [
     {
       name: "Resume to Job Role Prediction using ML",
@@ -62,14 +59,13 @@ const Mapping = () => {
   ];
 
   useEffect(() => {
-    // Missing skills for Data Scientist
     const staticMissingSkills = [
       "Machine Learning",
       "Deep Learning",
       "Data Visualization",
       "Feature Engineering",
       "Model Deployment",
-      "Big Data Tools (Spark/Hadoop)"
+      "Big Data Tools (Spark/Hadoop)",
     ];
 
     setMissingSkills(staticMissingSkills);
@@ -81,193 +77,179 @@ const Mapping = () => {
     setRoles([{ name: predictedRole, match: matchPercentage }]);
 
     setProfiles({
-      github: githubParam || "https://github.com/thanusrikumili91/CarRentalSystem",
-      linkedin: linkedinParam || "https://www.linkedin.com/in/thanusri-kumili-1b400732a",
+      github: githubParam || "https://github.com/thanusrikumili91",
+      linkedin: linkedinParam || "https://www.linkedin.com",
     });
 
     setAnalyzing(false);
   }, [scoreParam, githubParam, linkedinParam]);
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-2xl">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-black">
+      <div className="w-full max-w-3xl">
+
         {analyzing ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
-            <div className="w-20 h-20 mx-auto mb-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-            <p className="text-2xl font-bold gradient-text mb-3">Matching Your Skills with Job Roles...</p>
-            <p className="text-muted-foreground">Our AI is analyzing your profile</p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-20"
+          >
+            <div className="w-20 h-20 mx-auto mb-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+            <p className="text-2xl font-bold text-blue-400 mb-3">
+              Matching Your Skills with Job Roles...
+            </p>
+            <p className="text-gray-400">Our AI is analyzing your profile</p>
           </motion.div>
         ) : (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <div className="text-center mb-10">
-              <h1 className="text-3xl font-bold mb-2">
-                Your <span className="gradient-text">Top Match</span>
+              <h1 className="text-3xl font-bold text-white">
+                Your <span className="text-blue-400">Top Match</span>
               </h1>
-              <p className="text-muted-foreground">Based on your skills and experience</p>
+              <p className="text-gray-400">
+                Based on your skills and experience
+              </p>
             </div>
 
-            <div className="space-y-4">
-              {roles.map((role, i) => (
-                <motion.div
-                  key={role.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.2, duration: 0.4 }}
-                  className="glass-card glow-border p-6 card-hover"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Briefcase className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <h2 className="font-semibold text-foreground">{role.name}</h2>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <TrendingUp className="w-3 h-3" />
-                          <span>{role.match}% Match</span>
-                        </div>
-                      </div>
+            {roles.map((role, i) => (
+              <motion.div
+                key={role.name}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="backdrop-blur-xl bg-white/5 border border-blue-500/20 rounded-2xl p-8 shadow-xl hover:border-blue-500/40 transition"
+              >
+                {/* Role Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                      <Briefcase className="text-blue-400 w-5 h-5" />
                     </div>
 
-                    <button
-                      onClick={() => navigate(`/jobs?role=${encodeURIComponent(role.name)}`)}
-                      className="glow-button px-5 py-2 rounded-lg text-xs font-semibold"
-                    >
-                      View Jobs
-                    </button>
-                  </div>
-
-                  <div className="w-full h-2 rounded-full bg-secondary overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${role.match}%` }}
-                      transition={{ delay: i * 0.2 + 0.3, duration: 0.8 }}
-                      className="h-full rounded-full progress-glow"
-                    />
-                  </div>
-
-                  {/* Missing Skills */}
-                  <div className="mt-6">
-                    <p className="text-sm font-semibold text-red-500 mb-2">Missing Skills</p>
-                    <div className="flex flex-wrap gap-2">
-                      {missingSkills.map((skill, index) => (
-                        <button
-                          key={index}
-                          onClick={() => {
-                            let courses = "";
-
-                            switch (skill) {
-                              case "Machine Learning":
-                                courses =
-                                  "Courses:\n1. Machine Learning by Andrew Ng (Coursera)\n2. Applied ML (Udemy)";
-                                break;
-
-                              case "Deep Learning":
-                                courses =
-                                  "Courses:\n1. Deep Learning Specialization (Coursera)\n2. Neural Networks (Udemy)";
-                                break;
-
-                              case "Data Visualization":
-                                courses =
-                                  "Courses:\n1. Data Visualization with Python (Coursera)\n2. Tableau Training (Udemy)";
-                                break;
-
-                              case "Feature Engineering":
-                                courses =
-                                  "Courses:\n1. Feature Engineering for ML (Udemy)";
-                                break;
-
-                              case "Model Deployment":
-                                courses =
-                                  "Courses:\n1. ML Deployment with Flask & Docker";
-                                break;
-
-                              case "Big Data Tools (Spark/Hadoop)":
-                                courses =
-                                  "Courses:\n1. Apache Spark for Data Engineers";
-                                break;
-
-                              default:
-                                courses = "No courses found.";
-                            }
-
-                            alert(courses);
-                          }}
-                          className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs hover:bg-red-200 transition"
-                        >
-                          {skill}
-                        </button>
-                      ))}
+                    <div>
+                      <h2 className="text-lg font-semibold text-white">
+                        {role.name}
+                      </h2>
+                      <p className="text-xs text-gray-400 flex items-center gap-1">
+                        <TrendingUp className="w-3 h-3" />
+                        {role.match}% Match
+                      </p>
                     </div>
                   </div>
 
-                  {/* Suggested Jobs */}
-                  <div className="mt-6">
-                    <p className="text-sm font-semibold text-green-600 mb-2">Suggested Jobs</p>
-                    <div className="flex flex-col gap-2">
-                      {suggestedJobs.map((job, idx) => (
-                        <a
-                          key={idx}
-                          href={job.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-700 hover:underline flex justify-between p-2 bg-blue-50 rounded-md"
-                        >
-                          <span>
-                            {job.title} @ {job.company}
-                          </span>
-                          <span className="text-xs text-muted-foreground">{job.location}</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
+                  <button
+                    onClick={() =>
+                      navigate(`/jobs?role=${encodeURIComponent(role.name)}`)
+                    }
+                    className="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 transition shadow-lg shadow-blue-500/30"
+                  >
+                    View Jobs
+                  </button>
+                </div>
 
-                  {/* Projects */}
-                  <div className="mt-6">
-                    <p className="text-sm font-semibold text-purple-600 mb-2">Projects</p>
-                    <div className="flex flex-col gap-2">
-                      {projects.map((project, idx) => (
-                        <a
-                          key={idx}
-                          href={project.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-purple-700 hover:underline flex justify-between p-2 bg-purple-50 rounded-md"
-                        >
-                          <span>{project.name}</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
+                {/* Progress */}
+                <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${role.match}%` }}
+                    transition={{ duration: 1 }}
+                    className="h-full bg-gradient-to-r from-blue-500 to-blue-400 shadow-[0_0_10px_#3b82f6]"
+                  />
+                </div>
 
-                  {/* GitHub / LinkedIn */}
-                  {(profiles.github || profiles.linkedin) && (
-                    <div className="mt-6 flex gap-4">
-                      {profiles.github && (
-                        <a
-                          href={profiles.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1"
-                        >
-                          GitHub <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                      {profiles.linkedin && (
-                        <a
-                          href={profiles.linkedin}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm font-semibold text-blue-700 hover:underline flex items-center gap-1"
-                        >
-                          LinkedIn <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
+                {/* Missing Skills */}
+                <div className="mt-8">
+                  <p className="text-blue-400 font-semibold mb-3">
+                    Missing Skills
+                  </p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {missingSkills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="text-xs px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Suggested Jobs */}
+                <div className="mt-8">
+                  <p className="text-blue-400 font-semibold mb-3">
+                    Suggested Jobs
+                  </p>
+
+                  <div className="space-y-2">
+                    {suggestedJobs.map((job, idx) => (
+                      <a
+                        key={idx}
+                        href={job.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex justify-between text-sm bg-white/5 hover:bg-white/10 transition p-3 rounded-lg"
+                      >
+                        <span className="text-white">
+                          {job.title} @ {job.company}
+                        </span>
+                        <span className="text-gray-400">{job.location}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Projects */}
+                <div className="mt-8">
+                  <p className="text-blue-400 font-semibold mb-3">Projects</p>
+
+                  <div className="space-y-2">
+                    {projects.map((project, idx) => (
+                      <a
+                        key={idx}
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm block bg-white/5 hover:bg-white/10 p-3 rounded-lg text-blue-300"
+                      >
+                        {project.name}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Social */}
+                {(profiles.github || profiles.linkedin) && (
+                  <div className="mt-8 flex gap-5">
+                    {profiles.github && (
+                      <a
+                        href={profiles.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                      >
+                        GitHub <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+
+                    {profiles.linkedin && (
+                      <a
+                        href={profiles.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                      >
+                        LinkedIn <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            ))}
           </motion.div>
         )}
       </div>
