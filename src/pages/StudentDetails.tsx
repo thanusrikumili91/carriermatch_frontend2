@@ -5,6 +5,13 @@ import { User, GraduationCap, Calendar, Award, Wrench } from "lucide-react";
 
 const educationOptions = ["B.Tech","B.Sc","BCA","MCA","M.Tech","MBA","Degree","Diploma","Other"];
 
+const citiesByCountry: Record<string, string[]> = {
+  in: ["Hyderabad", "Bangalore", "Chennai", "Mumbai", "Delhi"],
+  us: ["New York", "San Francisco", "Austin", "Seattle"],
+  gb: ["London", "Manchester", "Birmingham"],
+  ca: ["Toronto", "Vancouver", "Montreal"]
+};
+
 const StudentDetails = () => {
 
   const navigate = useNavigate();
@@ -191,9 +198,10 @@ const StudentDetails = () => {
 
             <div className="grid grid-cols-2 gap-3">
 
+              {/* Country */}
               <select
               value={form.country}
-              onChange={(e)=>setForm({...form,country:e.target.value})}
+              onChange={(e)=>setForm({...form,country:e.target.value, city:""})}
               className={inputClass}
               >
                 <option value="gb">UK</option>
@@ -202,12 +210,19 @@ const StudentDetails = () => {
                 <option value="ca">Canada</option>
               </select>
 
-              <input
-              placeholder="City"
+              {/* City */}
+              <select
               value={form.city}
               onChange={(e)=>setForm({...form,city:e.target.value})}
               className={inputClass}
-              />
+              >
+                <option value="">Select City</option>
+                {citiesByCountry[form.country]?.map((city)=>(
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
 
               <input
               type="number"
