@@ -135,9 +135,35 @@ const Mapping = () => {
                       <p className="text-sm font-semibold text-red-500 mb-2">Missing Skills</p>
                       <div className="flex flex-wrap gap-2">
                         {missingSkills.map((skill, index) => (
-                          <span key={index} className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">
+                          <button
+                            key={index}
+                            onClick={() => {
+                              let courses = "";
+                              switch (skill) {
+                                case "Django / Spring Boot":
+                                  courses = "Suggested Courses:\n1. Django for Beginners (Udemy)\n2. Spring Boot Microservices (Coursera)\n3. Full Stack Web Dev with Django (edX)";
+                                  break;
+                                case "Docker":
+                                  courses = "Docker Courses:\n1. Docker for Developers (Udemy)\n2. Docker Mastery (Udemy)";
+                                  break;
+                                case "AWS / Azure":
+                                  courses = "Cloud Courses:\n1. AWS Certified Solutions Architect (AWS)\n2. Azure Fundamentals (Microsoft Learn)";
+                                  break;
+                                case "Unit Testing":
+                                  courses = "Unit Testing Courses:\n1. Unit Testing with Python (Udemy)\n2. JUnit for Java Developers (Coursera)";
+                                  break;
+                                case "CI/CD":
+                                  courses = "CI/CD Courses:\n1. Jenkins for Beginners (Udemy)\n2. DevOps CI/CD Pipeline (Coursera)";
+                                  break;
+                                default:
+                                  courses = "No courses found.";
+                              }
+                              alert(courses);
+                            }}
+                            className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs hover:bg-red-200 transition"
+                          >
                             {skill}
-                          </span>
+                          </button>
                         ))}
                       </div>
                     </div>
