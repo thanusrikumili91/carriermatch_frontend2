@@ -19,6 +19,22 @@ const Mapping = () => {
   const [missingSkills, setMissingSkills] = useState<string[]>([]);
   const [profiles, setProfiles] = useState<{ github?: string; linkedin?: string }>({});
 
+  // Static job suggestions for Software Developer
+  const suggestedJobs = [
+    {
+      title: "Full Stack Developer",
+      company: "Tech Solutions Pvt Ltd",
+      location: "Bangalore, India",
+      link: "https://www.example.com/job/fullstack",
+    },
+    {
+      title: "Backend Developer",
+      company: "Innovatech",
+      location: "Hyderabad, India",
+      link: "https://www.example.com/job/backend",
+    },
+  ];
+
   useEffect(() => {
     // Static missing skills for Software Developer
     const staticMissingSkills = ["Django / Spring Boot", "Docker", "AWS / Azure", "Unit Testing", "CI/CD"];
@@ -114,6 +130,25 @@ const Mapping = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Suggested Jobs */}
+                  <div className="mt-6">
+                    <p className="text-sm font-semibold text-green-600 mb-2">Suggested Jobs</p>
+                    <div className="flex flex-col gap-2">
+                      {suggestedJobs.map((job, idx) => (
+                        <a
+                          key={idx}
+                          href={job.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-700 hover:underline flex justify-between p-2 bg-blue-50 rounded-md"
+                        >
+                          <span>{job.title} @ {job.company}</span>
+                          <span className="text-xs text-muted-foreground">{job.location}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
 
                   {/* GitHub & LinkedIn */}
                   {(profiles.github || profiles.linkedin) && (
