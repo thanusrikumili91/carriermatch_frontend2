@@ -7,7 +7,8 @@ const Mapping = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const predictedRole = searchParams.get("role") || "Software Developer";
+  // Default to "Software Developer" if no role is predicted
+  const predictedRole = searchParams.get("role")?.trim() || "Software Developer";
   const scoreParam = searchParams.get("score");
   const missingParam = searchParams.get("missing");
   const githubParam = searchParams.get("github");
@@ -35,13 +36,13 @@ const Mapping = () => {
     const matchPercentage =
       baseScore > 0
         ? Math.round(baseScore * 100)
-        : Math.floor(Math.random() * 41) + 60; // random between 60-100%
+        : Math.floor(Math.random() * 41) + 60; // 60-100%
 
-    // Role list (can expand in future)
+    // Role list
     const roleList = [{ name: predictedRole, match: matchPercentage }];
     setRoles(roleList);
 
-    // Set profiles (GitHub static fallback)
+    // Profiles (GitHub static fallback)
     setProfiles({
       github: githubParam
         ? decodeURIComponent(githubParam)
