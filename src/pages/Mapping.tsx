@@ -35,6 +35,18 @@ const Mapping = () => {
     },
   ];
 
+  // Static projects
+  const projects = [
+    {
+      name: "AI-Powered Code Review Assistant",
+      link: "https://github.com/thanusrikumili91/AI-Code-Review",
+    },
+    {
+      name: "Collaborative Real-Time Code Editor (VS Code-like Web App)",
+      link: "https://github.com/thanusrikumili91/Realtime-Code-Editor",
+    },
+  ];
+
   useEffect(() => {
     // Static missing skills for Software Developer
     const staticMissingSkills = ["Django / Spring Boot", "Docker", "AWS / Azure", "Unit Testing", "CI/CD"];
@@ -143,8 +155,28 @@ const Mapping = () => {
                           rel="noopener noreferrer"
                           className="text-sm text-blue-700 hover:underline flex justify-between p-2 bg-blue-50 rounded-md"
                         >
-                          <span>{job.title} @ {job.company}</span>
+                          <span>
+                            {job.title} @ {job.company}
+                          </span>
                           <span className="text-xs text-muted-foreground">{job.location}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Projects Section */}
+                  <div className="mt-6">
+                    <p className="text-sm font-semibold text-purple-600 mb-2">Projects</p>
+                    <div className="flex flex-col gap-2">
+                      {projects.map((project, idx) => (
+                        <a
+                          key={idx}
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-purple-700 hover:underline flex justify-between p-2 bg-purple-50 rounded-md"
+                        >
+                          <span>{project.name}</span>
                         </a>
                       ))}
                     </div>
