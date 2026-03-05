@@ -7,196 +7,197 @@ interface Job {
   title: string;
   company: string;
   location: string;
-  salary: string;
+  salary: number;
+  type: string;
   link: string;
 }
 
-// Cities list
-const CITIES = ["Hyderabad", "Bangalore", "Chennai", "Pune", "Mumbai"];
+const STATIC_JOBS: Job[] = [
+  { title:"Software Developer", company:"Apple", location:"Hyderabad", salary:80000, type:"Product", link:"https://jobs.apple.com" },
+  { title:"Backend Developer", company:"IBM", location:"Bangalore", salary:70000, type:"Service", link:"https://www.ibm.com/careers" },
+  { title:"Frontend Developer", company:"Google", location:"Hyderabad", salary:90000, type:"Product", link:"https://careers.google.com" },
+  { title:"Fullstack Developer", company:"Infosys", location:"Chennai", salary:60000, type:"Service", link:"https://career.infosys.com" },
+  { title:"Java Developer", company:"Microsoft", location:"Pune", salary:85000, type:"Product", link:"https://careers.microsoft.com" },
+  { title:"Python Developer", company:"Amazon", location:"Hyderabad", salary:95000, type:"Product", link:"https://www.amazon.jobs" },
+  { title:"React Developer", company:"Accenture", location:"Bangalore", salary:65000, type:"Service", link:"https://www.accenture.com/careers" },
+  { title:"Node Developer", company:"Oracle", location:"Mumbai", salary:88000, type:"Product", link:"https://www.oracle.com/careers" },
+  { title:"Software Engineer", company:"Capgemini", location:"Pune", salary:62000, type:"Service", link:"https://www.capgemini.com/careers" },
+  { title:"Backend Engineer", company:"Adobe", location:"Bangalore", salary:93000, type:"Product", link:"https://careers.adobe.com" },
+  { title:"Frontend Engineer", company:"TCS", location:"Chennai", salary:58000, type:"Service", link:"https://www.tcs.com/careers" },
+  { title:"Full Stack Engineer", company:"Wipro", location:"Hyderabad", salary:61000, type:"Service", link:"https://careers.wipro.com" },
+  { title:"Cloud Developer", company:"Google", location:"Bangalore", salary:98000, type:"Product", link:"https://careers.google.com" },
+  { title:"API Developer", company:"Zoho", location:"Chennai", salary:72000, type:"Product", link:"https://www.zoho.com/careers" },
+  { title:"Web Developer", company:"HCL", location:"Pune", salary:63000, type:"Service", link:"https://www.hcltech.com/careers" },
+  { title:"Java Backend Developer", company:"IBM", location:"Hyderabad", salary:87000, type:"Service", link:"https://www.ibm.com/careers" },
+  { title:"UI Developer", company:"Samsung", location:"Bangalore", salary:91000, type:"Product", link:"https://www.samsung.com/careers" },
+  { title:"Software Engineer II", company:"PayPal", location:"Chennai", salary:94000, type:"Product", link:"https://www.paypal.com/careers" },
+  { title:"Spring Boot Developer", company:"Cognizant", location:"Hyderabad", salary:67000, type:"Service", link:"https://careers.cognizant.com" },
+  { title:"Frontend React Engineer", company:"Flipkart", location:"Bangalore", salary:92000, type:"Product", link:"https://www.flipkartcareers.com" }
+];
 
-// ------------------------------
-// Static fallback jobs per role
-// ------------------------------
-const STATIC_JOBS: Record<string, Job[]> = {
-  "Software Developer": [
-    { title: "Software Developer I", company: "Apple", location: "Hyderabad", salary: "₹50,000 - ₹80,000", link: "https://jobs.apple.com/en-in/search?location=hyderabad-HYD" },
-    { title: "Junior Developer", company: "IBM", location: "Hyderabad", salary: "₹55,000 - ₹90,000", link: "https://www.ibm.com/careers/search?location=Hyderabad" },
-    { title: "Fullstack Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "https://careers.google.com/jobs/results/?location=Hyderabad" },
-    { title: "Backend Developer", company: "Microsoft", location: "Hyderabad", salary: "₹60,000 - ₹95,000", link: "https://jobs.careers.microsoft.com/global/en/search?q=Hyderabad" },
-    { title: "Frontend Developer", company: "Infosys", location: "Hyderabad", salary: "₹50,000 - ₹75,000", link: "https://career.infosys.com/joblist?location=Hyderabad" },
-  ],
-
-  "Data Architect": [
-    { title: "Data Architect", company: "Google", location: "Hyderabad", salary: "₹80,000 - ₹100,000", link: "https://careers.google.com/jobs/results/?location=Hyderabad" },
-    { title: "Senior Data Engineer", company: "IBM", location: "Hyderabad", salary: "₹70,000 - ₹95,000", link: "https://www.ibm.com/careers/search?location=Hyderabad" },
-    { title: "Big Data Architect", company: "Microsoft", location: "Hyderabad", salary: "₹85,000 - ₹100,000", link: "https://jobs.careers.microsoft.com/global/en/search?q=Hyderabad" },
-    { title: "ETL Developer", company: "Infosys", location: "Hyderabad", salary: "₹60,000 - ₹80,000", link: "https://career.infosys.com/joblist?location=Hyderabad" },
-    { title: "Database Designer", company: "Apple", location: "Hyderabad", salary: "₹65,000 - ₹90,000", link: "https://jobs.apple.com/en-in/search?location=hyderabad-HYD" },
-  ],
-
-  "Backend Developer": [
-    { title: "Backend Developer", company: "Microsoft", location: "Hyderabad", salary: "₹65,000 - ₹95,000", link: "https://jobs.careers.microsoft.com/global/en/search?q=Hyderabad" },
-    { title: "API Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "https://careers.google.com/jobs/results/?location=Hyderabad" },
-    { title: "Python Developer", company: "IBM", location: "Hyderabad", salary: "₹60,000 - ₹85,000", link: "https://www.ibm.com/careers/search?location=Hyderabad" },
-    { title: "Node.js Developer", company: "Apple", location: "Hyderabad", salary: "₹65,000 - ₹90,000", link: "https://jobs.apple.com/en-in/search?location=hyderabad-HYD" },
-    { title: "Java Developer", company: "Infosys", location: "Hyderabad", salary: "₹55,000 - ₹80,000", link: "https://career.infosys.com/joblist?location=Hyderabad" },
-  ],
-
-  "Frontend Engineer": [
-    { title: "Frontend Engineer", company: "Apple", location: "Hyderabad", salary: "₹60,000 - ₹90,000", link: "https://jobs.apple.com/en-in/search?location=hyderabad-HYD" },
-    { title: "React Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "https://careers.google.com/jobs/results/?location=Hyderabad" },
-    { title: "UI Engineer", company: "Microsoft", location: "Hyderabad", salary: "₹65,000 - ₹95,000", link: "https://jobs.careers.microsoft.com/global/en/search?q=Hyderabad" },
-    { title: "Frontend Developer", company: "IBM", location: "Hyderabad", salary: "₹60,000 - ₹85,000", link: "https://www.ibm.com/careers/search?location=Hyderabad" },
-    { title: "Vue.js Developer", company: "Infosys", location: "Hyderabad", salary: "₹55,000 - ₹75,000", link: "https://career.infosys.com/joblist?location=Hyderabad" },
-  ],
-};
 const JobListings = () => {
+
   const [searchParams] = useSearchParams();
   const role = searchParams.get("role") || "Software Developer";
 
-  const [city, setCity] = useState("Hyderabad");
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [locationFilter, setLocationFilter] = useState("");
+  const [salaryFilter, setSalaryFilter] = useState(0);
+  const [typeFilter, setTypeFilter] = useState("");
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      setLoading(true);
+    setJobs(STATIC_JOBS);
+  }, []);
 
-      try {
-        const res = await fetch(
-          `https://thanusrikumili91-resumeai.hf.space/jobs?role=${encodeURIComponent(role)}&city=${encodeURIComponent(city)}`
-        );
+  const filteredJobs = jobs.filter((job) => {
 
-        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+    if (role && !job.title.toLowerCase().includes(role.toLowerCase()))
+      return false;
 
-        const data = await res.json();
+    if (locationFilter && job.location !== locationFilter)
+      return false;
 
-        if (data?.jobs && data.jobs.length > 0) {
-          setJobs(data.jobs);
-        } else {
-          // Update location dynamically with selected city
-          const updatedJobs = (STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]).map(
-            (job) => ({
-              ...job,
-              location: city,
-            })
-          );
+    if (salaryFilter && job.salary < salaryFilter)
+      return false;
 
-          setJobs(updatedJobs);
-        }
-      } catch (err) {
-        console.error("Job fetch failed:", err);
+    if (typeFilter && job.type !== typeFilter)
+      return false;
 
-        const updatedJobs = (STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]).map(
-          (job) => ({
-            ...job,
-            location: city,
-          })
-        );
-
-        setJobs(updatedJobs);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJobs();
-  }, [role, city]);
+    return true;
+  });
 
   return (
     <div className="min-h-[85vh] px-4 py-12">
       <div className="max-w-3xl mx-auto">
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
+
           <Link
             to="/mapping"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8"
           >
-            <ArrowLeft className="w-4 h-4" /> Back to Results
+            <ArrowLeft className="w-4 h-4" />
+            Back to Results
           </Link>
 
-          {/* City Selector */}
-          <div className="mb-6">
-            <label className="text-sm text-muted-foreground mr-3">
-              Select City:
-            </label>
+          <h1 className="text-3xl font-bold mb-6">
+            Jobs for <span className="gradient-text">{role}</span>
+          </h1>
+
+          {/* FILTERS */}
+
+          <div className="flex flex-wrap gap-4 mb-8">
+
             <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="px-3 py-2 rounded-md bg-background border border-muted text-sm"
+              onChange={(e) => setLocationFilter(e.target.value)}
+              className="px-3 py-2 border rounded-md text-sm"
             >
-              {CITIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
+              <option value="">All Locations</option>
+              <option>Hyderabad</option>
+              <option>Bangalore</option>
+              <option>Chennai</option>
+              <option>Pune</option>
+              <option>Mumbai</option>
             </select>
+
+            <select
+              onChange={(e) => setSalaryFilter(Number(e.target.value))}
+              className="px-3 py-2 border rounded-md text-sm"
+            >
+              <option value="0">Any Salary</option>
+              <option value="60000">60k+</option>
+              <option value="80000">80k+</option>
+              <option value="90000">90k+</option>
+            </select>
+
+            <select
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="px-3 py-2 border rounded-md text-sm"
+            >
+              <option value="">All Companies</option>
+              <option>Product</option>
+              <option>Service</option>
+            </select>
+
           </div>
 
-          <div className="mb-10">
-            <h1 className="text-3xl font-bold mb-2">
-              Jobs for <span className="gradient-text">{role}</span>
-            </h1>
+          <p className="text-muted-foreground mb-6">
+            {filteredJobs.length} openings found
+          </p>
 
-            {loading ? (
-              <p className="text-muted-foreground">Loading job postings...</p>
-            ) : (
-              <p className="text-muted-foreground">
-                {jobs.length} openings found in {city}
-              </p>
-            )}
-          </div>
+          {/* JOB CARDS */}
 
           <div className="space-y-4">
-            {jobs.map((job, i) => (
+
+            {filteredJobs.map((job, i) => (
+
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1, duration: 0.4 }}
+                transition={{ delay: i * 0.05 }}
                 className="glass-card glow-border p-6 card-hover"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
+                <div className="flex flex-col sm:flex-row justify-between gap-4">
+
                   <div>
-                    <h2 className="font-semibold text-foreground text-lg">
+
+                    <h2 className="font-semibold text-lg">
                       {job.title}
                     </h2>
 
                     <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+
                       <span className="flex items-center gap-1">
-                        <Building2 className="w-3.5 h-3.5" /> {job.company}
+                        <Building2 className="w-3.5 h-3.5"/>
+                        {job.company}
                       </span>
 
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5" /> {job.location}
+                        <MapPin className="w-3.5 h-3.5"/>
+                        {job.location}
                       </span>
 
-                      <span className="flex items-center gap-1 font-medium text-green-400">
-                        💰 {job.salary}
+                      <span className="text-green-500 font-medium">
+                        💰 ₹{job.salary}
                       </span>
+
+                      <span className="text-blue-400">
+                        {job.type}
+                      </span>
+
                     </div>
+
                   </div>
 
                   <a
                     href={job.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="glow-button px-5 py-2.5 rounded-lg text-xs font-semibold inline-flex items-center gap-2 shrink-0"
+                    className="glow-button px-5 py-2.5 rounded-lg text-xs font-semibold inline-flex items-center gap-2"
                   >
-                    Apply <ExternalLink className="w-3.5 h-3.5" />
+                    Apply
+                    <ExternalLink className="w-3.5 h-3.5"/>
                   </a>
+
                 </div>
+
               </motion.div>
+
             ))}
+
           </div>
+
         </motion.div>
+
       </div>
     </div>
   );
 };
 
 export default JobListings;
-
