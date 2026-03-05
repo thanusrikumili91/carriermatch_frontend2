@@ -41,9 +41,11 @@ const Mapping = () => {
     const roleList = [{ name: predictedRole, match: matchPercentage }];
     setRoles(roleList);
 
-    // Set profiles if available
+    // Set profiles (GitHub static fallback)
     setProfiles({
-      github: githubParam ? decodeURIComponent(githubParam) : undefined,
+      github: githubParam
+        ? decodeURIComponent(githubParam)
+        : "https://github.com/thanusrikumili91/CarRentalSystem",
       linkedin: linkedinParam ? decodeURIComponent(linkedinParam) : undefined,
     });
 
