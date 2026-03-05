@@ -7,8 +7,8 @@ const Mapping = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Always default to "Software Developer"
-  const predictedRole = "Software Developer";
+  // Default role
+  const predictedRole = "Data Scientist";
 
   const scoreParam = searchParams.get("score");
   const githubParam = searchParams.get("github")?.trim();
@@ -19,52 +19,70 @@ const Mapping = () => {
   const [missingSkills, setMissingSkills] = useState<string[]>([]);
   const [profiles, setProfiles] = useState<{ github?: string; linkedin?: string }>({});
 
-  // Static job suggestions for Software Developer
+  // Data Science Jobs
   const suggestedJobs = [
     {
-      title: "Full Stack Developer",
-      company: "Tech Solutions Pvt Ltd",
-      location: "Bangalore, India",
-      link: "https://www.example.com/job/fullstack",
+      title: "Data Scientist",
+      company: "TCS",
+      location: "Hyderabad, India",
+      link: "https://www.example.com/job/datascientist",
     },
     {
-      title: "Backend Developer",
-      company: "Innovatech",
-      location: "Hyderabad, India",
-      link: "https://www.example.com/job/backend",
+      title: "Machine Learning Engineer",
+      company: "Infosys",
+      location: "Bangalore, India",
+      link: "https://www.example.com/job/mlengineer",
+    },
+    {
+      title: "AI Engineer",
+      company: "Wipro",
+      location: "Pune, India",
+      link: "https://www.example.com/job/aiengineer",
     },
   ];
 
-  // Static projects
+  // Data Science Projects
   const projects = [
     {
-      name: "AI-Powered Code Review Assistant",
-      link: "https://github.com/thanusrikumili91/AI-Code-Review",
+      name: "Resume to Job Role Prediction using ML",
+      link: "https://github.com/thanusrikumili91/resume-job-matcher",
     },
     {
-      name: "Collaborative Real-Time Code Editor (VS Code-like Web App)",
-      link: "https://github.com/thanusrikumili91/Realtime-Code-Editor",
+      name: "Customer Churn Prediction System",
+      link: "https://github.com/thanusrikumili91/churn-prediction",
+    },
+    {
+      name: "House Price Prediction using Machine Learning",
+      link: "https://github.com/thanusrikumili91/house-price-ml",
+    },
+    {
+      name: "Sentiment Analysis on Twitter Data",
+      link: "https://github.com/thanusrikumili91/sentiment-analysis",
     },
   ];
 
   useEffect(() => {
-    // Static missing skills for Software Developer
-    const staticMissingSkills = ["Django / Spring Boot", "Docker", "AWS / Azure", "Unit Testing", "CI/CD"];
+    // Missing skills for Data Scientist
+    const staticMissingSkills = [
+      "Machine Learning",
+      "Deep Learning",
+      "Data Visualization",
+      "Feature Engineering",
+      "Model Deployment",
+      "Big Data Tools (Spark/Hadoop)"
+    ];
 
     setMissingSkills(staticMissingSkills);
 
-    // Generate random match percentage if score is missing
     const baseScore = scoreParam ? Number(scoreParam) : 0;
     const matchPercentage =
-      baseScore > 0 ? Math.round(baseScore * 100) : Math.floor(Math.random() * 41) + 60; // 60-100%
+      baseScore > 0 ? Math.round(baseScore * 100) : Math.floor(Math.random() * 41) + 60;
 
-    // Always ensure at least one role
     setRoles([{ name: predictedRole, match: matchPercentage }]);
 
-    // Profiles (GitHub / LinkedIn fallback)
     setProfiles({
       github: githubParam || "https://github.com/thanusrikumili91/CarRentalSystem",
-      linkedin: linkedinParam || "https://www.linkedin.com/in/thanusrikumili91/",
+      linkedin: linkedinParam || "https://www.linkedin.com/in/thanusri-kumili-1b400732a",
     });
 
     setAnalyzing(false);
@@ -119,55 +137,69 @@ const Mapping = () => {
                     </button>
                   </div>
 
-                  {/* Progress Bar */}
                   <div className="w-full h-2 rounded-full bg-secondary overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${role.match}%` }}
-                      transition={{ delay: i * 0.2 + 0.3, duration: 0.8, ease: "easeOut" }}
+                      transition={{ delay: i * 0.2 + 0.3, duration: 0.8 }}
                       className="h-full rounded-full progress-glow"
                     />
                   </div>
 
-                  {/* Missing Skills Section */}
-                  {missingSkills.length > 0 && (
-                    <div className="mt-6">
-                      <p className="text-sm font-semibold text-red-500 mb-2">Missing Skills</p>
-                      <div className="flex flex-wrap gap-2">
-                        {missingSkills.map((skill, index) => (
-                          <button
-                            key={index}
-                            onClick={() => {
-                              let courses = "";
-                              switch (skill) {
-                                case "Django / Spring Boot":
-                                  courses = "Suggested Courses:\n1. Django for Beginners (Udemy)\n2. Spring Boot Microservices (Coursera)\n3. Full Stack Web Dev with Django (edX)";
-                                  break;
-                                case "Docker":
-                                  courses = "Docker Courses:\n1. Docker for Developers (Udemy)\n2. Docker Mastery (Udemy)";
-                                  break;
-                                case "AWS / Azure":
-                                  courses = "Cloud Courses:\n1. AWS Certified Solutions Architect (AWS)\n2. Azure Fundamentals (Microsoft Learn)";
-                                  break;
-                                case "Unit Testing":
-                                  courses = "Unit Testing Courses:\n1. Unit Testing with Python (Udemy)\n2. JUnit for Java Developers (Coursera)";
-                                  break;
-                                case "CI/CD":
-                                  courses = "CI/CD Courses:\n1. Jenkins for Beginners (Udemy)\n2. DevOps CI/CD Pipeline (Coursera)";
-                                  break;
-                                default:
-                                  courses = "No courses found.";
-                              }
-                              alert(courses);
-                            }}
-                            className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs hover:bg-red-200 transition"
-                          >
-                            {skill}
-                          </button>
-                        ))}
-                      </div>
+                  {/* Missing Skills */}
+                  <div className="mt-6">
+                    <p className="text-sm font-semibold text-red-500 mb-2">Missing Skills</p>
+                    <div className="flex flex-wrap gap-2">
+                      {missingSkills.map((skill, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            let courses = "";
+
+                            switch (skill) {
+                              case "Machine Learning":
+                                courses =
+                                  "Courses:\n1. Machine Learning by Andrew Ng (Coursera)\n2. Applied ML (Udemy)";
+                                break;
+
+                              case "Deep Learning":
+                                courses =
+                                  "Courses:\n1. Deep Learning Specialization (Coursera)\n2. Neural Networks (Udemy)";
+                                break;
+
+                              case "Data Visualization":
+                                courses =
+                                  "Courses:\n1. Data Visualization with Python (Coursera)\n2. Tableau Training (Udemy)";
+                                break;
+
+                              case "Feature Engineering":
+                                courses =
+                                  "Courses:\n1. Feature Engineering for ML (Udemy)";
+                                break;
+
+                              case "Model Deployment":
+                                courses =
+                                  "Courses:\n1. ML Deployment with Flask & Docker";
+                                break;
+
+                              case "Big Data Tools (Spark/Hadoop)":
+                                courses =
+                                  "Courses:\n1. Apache Spark for Data Engineers";
+                                break;
+
+                              default:
+                                courses = "No courses found.";
+                            }
+
+                            alert(courses);
+                          }}
+                          className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs hover:bg-red-200 transition"
+                        >
+                          {skill}
+                        </button>
+                      ))}
                     </div>
-                  )}
+                  </div>
 
                   {/* Suggested Jobs */}
                   <div className="mt-6">
@@ -190,7 +222,7 @@ const Mapping = () => {
                     </div>
                   </div>
 
-                  {/* Projects Section */}
+                  {/* Projects */}
                   <div className="mt-6">
                     <p className="text-sm font-semibold text-purple-600 mb-2">Projects</p>
                     <div className="flex flex-col gap-2">
@@ -208,7 +240,7 @@ const Mapping = () => {
                     </div>
                   </div>
 
-                  {/* GitHub & LinkedIn */}
+                  {/* GitHub / LinkedIn */}
                   {(profiles.github || profiles.linkedin) && (
                     <div className="mt-6 flex gap-4">
                       {profiles.github && (
