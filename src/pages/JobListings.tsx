@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { useSearchParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { MapPin, Building2, ExternalLink, ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface Job {
   title: string;
@@ -12,190 +12,172 @@ interface Job {
   link: string;
 }
 
+// -----------------------------
+// 20 Data Science / Data Engineer Jobs
+// -----------------------------
 const STATIC_JOBS: Job[] = [
-  { title:"Software Developer", company:"Apple", location:"Hyderabad", salary:80000, type:"Product", link:"https://jobs.apple.com" },
-  { title:"Backend Developer", company:"IBM", location:"Bangalore", salary:70000, type:"Service", link:"https://www.ibm.com/careers" },
-  { title:"Frontend Developer", company:"Google", location:"Hyderabad", salary:90000, type:"Product", link:"https://careers.google.com" },
-  { title:"Fullstack Developer", company:"Infosys", location:"Chennai", salary:60000, type:"Service", link:"https://career.infosys.com" },
-  { title:"Java Developer", company:"Microsoft", location:"Pune", salary:85000, type:"Product", link:"https://careers.microsoft.com" },
-  { title:"Python Developer", company:"Amazon", location:"Hyderabad", salary:95000, type:"Product", link:"https://www.amazon.jobs" },
-  { title:"React Developer", company:"Accenture", location:"Bangalore", salary:65000, type:"Service", link:"https://www.accenture.com/careers" },
-  { title:"Node Developer", company:"Oracle", location:"Mumbai", salary:88000, type:"Product", link:"https://www.oracle.com/careers" },
-  { title:"Software Engineer", company:"Capgemini", location:"Pune", salary:62000, type:"Service", link:"https://www.capgemini.com/careers" },
-  { title:"Backend Engineer", company:"Adobe", location:"Bangalore", salary:93000, type:"Product", link:"https://careers.adobe.com" },
-  { title:"Frontend Engineer", company:"TCS", location:"Chennai", salary:58000, type:"Service", link:"https://www.tcs.com/careers" },
-  { title:"Full Stack Engineer", company:"Wipro", location:"Hyderabad", salary:61000, type:"Service", link:"https://careers.wipro.com" },
-  { title:"Cloud Developer", company:"Google", location:"Bangalore", salary:98000, type:"Product", link:"https://careers.google.com" },
-  { title:"API Developer", company:"Zoho", location:"Chennai", salary:72000, type:"Product", link:"https://www.zoho.com/careers" },
-  { title:"Web Developer", company:"HCL", location:"Pune", salary:63000, type:"Service", link:"https://www.hcltech.com/careers" },
-  { title:"Java Backend Developer", company:"IBM", location:"Hyderabad", salary:87000, type:"Service", link:"https://www.ibm.com/careers" },
-  { title:"UI Developer", company:"Samsung", location:"Bangalore", salary:91000, type:"Product", link:"https://www.samsung.com/careers" },
-  { title:"Software Engineer II", company:"PayPal", location:"Chennai", salary:94000, type:"Product", link:"https://www.paypal.com/careers" },
-  { title:"Spring Boot Developer", company:"Cognizant", location:"Hyderabad", salary:67000, type:"Service", link:"https://careers.cognizant.com" },
-  { title:"Frontend React Engineer", company:"Flipkart", location:"Bangalore", salary:92000, type:"Product", link:"https://www.flipkartcareers.com" }
+  { title: "Data Engineer", company: "Google", location: "Hyderabad", salary: 90000, type: "Product", link: "https://careers.google.com" },
+  { title: "Junior Data Scientist", company: "Microsoft", location: "Bangalore", salary: 85000, type: "Product", link: "https://careers.microsoft.com" },
+  { title: "Machine Learning Engineer", company: "Amazon", location: "Hyderabad", salary: 95000, type: "Product", link: "https://amazon.jobs" },
+  { title: "Data Analyst", company: "IBM", location: "Pune", salary: 70000, type: "Service", link: "https://www.ibm.com/careers" },
+  { title: "AI Engineer", company: "Meta", location: "Bangalore", salary: 98000, type: "Product", link: "https://www.metacareers.com" },
+  { title: "Data Engineer", company: "Infosys", location: "Chennai", salary: 65000, type: "Service", link: "https://career.infosys.com" },
+  { title: "Data Scientist", company: "TCS", location: "Hyderabad", salary: 72000, type: "Service", link: "https://www.tcs.com/careers" },
+  { title: "ML Engineer", company: "Apple", location: "Bangalore", salary: 97000, type: "Product", link: "https://jobs.apple.com" },
+  { title: "Data Architect", company: "Accenture", location: "Mumbai", salary: 88000, type: "Service", link: "https://www.accenture.com/careers" },
+  { title: "Data Analyst", company: "Deloitte", location: "Hyderabad", salary: 76000, type: "Service", link: "https://jobs2.deloitte.com" },
+  { title: "AI Research Engineer", company: "NVIDIA", location: "Pune", salary: 99000, type: "Product", link: "https://www.nvidia.com/en-us/about-nvidia/careers" },
+  { title: "Data Engineer", company: "Oracle", location: "Bangalore", salary: 91000, type: "Product", link: "https://www.oracle.com/careers" },
+  { title: "ML Developer", company: "Capgemini", location: "Chennai", salary: 67000, type: "Service", link: "https://www.capgemini.com/careers" },
+  { title: "AI Engineer", company: "Samsung", location: "Bangalore", salary: 92000, type: "Product", link: "https://www.samsungcareers.com" },
+  { title: "Big Data Engineer", company: "Wipro", location: "Hyderabad", salary: 74000, type: "Service", link: "https://careers.wipro.com" },
+  { title: "Data Scientist", company: "Flipkart", location: "Bangalore", salary: 93000, type: "Product", link: "https://www.flipkartcareers.com" },
+  { title: "AI Developer", company: "Zoho", location: "Chennai", salary: 81000, type: "Product", link: "https://careers.zoho.com" },
+  { title: "Data Engineer", company: "HCL", location: "Pune", salary: 70000, type: "Service", link: "https://www.hcltech.com/careers" },
+  { title: "Machine Learning Engineer", company: "PayPal", location: "Hyderabad", salary: 94000, type: "Product", link: "https://www.paypal.com/careers" },
+  { title: "Data Analyst", company: "EY", location: "Mumbai", salary: 76000, type: "Service", link: "https://careers.ey.com" }
 ];
+
+const LOCATIONS = ["All", "Hyderabad", "Bangalore", "Chennai", "Pune", "Mumbai"];
+const TYPES = ["All", "Product", "Service"];
 
 const JobListings = () => {
 
-  const [searchParams] = useSearchParams();
-  const role = searchParams.get("role") || "Software Developer";
-
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [locationFilter, setLocationFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
   const [salaryFilter, setSalaryFilter] = useState(0);
-  const [typeFilter, setTypeFilter] = useState("");
 
-  useEffect(() => {
-    setJobs(STATIC_JOBS);
-  }, []);
+  // Filter logic
+  const filteredJobs = STATIC_JOBS.filter((job) => {
+    const locationMatch =
+      locationFilter === "All" || job.location === locationFilter;
 
-  const filteredJobs = jobs.filter((job) => {
+    const typeMatch =
+      typeFilter === "All" || job.type === typeFilter;
 
-    if (role && !job.title.toLowerCase().includes(role.toLowerCase()))
-      return false;
+    const salaryMatch =
+      salaryFilter === 0 || job.salary >= salaryFilter;
 
-    if (locationFilter && job.location !== locationFilter)
-      return false;
-
-    if (salaryFilter && job.salary < salaryFilter)
-      return false;
-
-    if (typeFilter && job.type !== typeFilter)
-      return false;
-
-    return true;
+    return locationMatch && typeMatch && salaryMatch;
   });
 
   return (
     <div className="min-h-[85vh] px-4 py-12">
+
       <div className="max-w-3xl mx-auto">
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <Link
+          to="/mapping"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8"
         >
+          <ArrowLeft className="w-4 h-4" /> Back to Results
+        </Link>
 
-          <Link
-            to="/mapping"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8"
+        <h1 className="text-3xl font-bold mb-6">
+          <span className="gradient-text">Data Science Job Listings</span>
+        </h1>
+
+        {/* Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+
+          {/* Location Filter */}
+          <select
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+            className="p-2 border rounded-md"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Results
-          </Link>
+            {LOCATIONS.map((loc) => (
+              <option key={loc}>{loc}</option>
+            ))}
+          </select>
 
-          <h1 className="text-3xl font-bold mb-6">
-            Jobs for <span className="gradient-text">{role}</span>
-          </h1>
+          {/* Company Type */}
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="p-2 border rounded-md"
+          >
+            {TYPES.map((t) => (
+              <option key={t}>{t}</option>
+            ))}
+          </select>
 
-          {/* FILTERS */}
+          {/* Salary Filter */}
+          <select
+            value={salaryFilter}
+            onChange={(e) => setSalaryFilter(Number(e.target.value))}
+            className="p-2 border rounded-md"
+          >
+            <option value={0}>All Salaries</option>
+            <option value={70000}>70k+</option>
+            <option value={80000}>80k+</option>
+            <option value={90000}>90k+</option>
+          </select>
 
-          <div className="flex flex-wrap gap-4 mb-8">
+        </div>
 
-            <select
-              onChange={(e) => setLocationFilter(e.target.value)}
-              className="px-3 py-2 border rounded-md text-sm"
+        <p className="text-muted-foreground mb-6">
+          {filteredJobs.length} openings found
+        </p>
+
+        {/* Job Cards */}
+        <div className="space-y-4">
+          {filteredJobs.map((job, i) => (
+
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="glass-card glow-border p-6"
             >
-              <option value="">All Locations</option>
-              <option>Hyderabad</option>
-              <option>Bangalore</option>
-              <option>Chennai</option>
-              <option>Pune</option>
-              <option>Mumbai</option>
-            </select>
 
-            <select
-              onChange={(e) => setSalaryFilter(Number(e.target.value))}
-              className="px-3 py-2 border rounded-md text-sm"
-            >
-              <option value="0">Any Salary</option>
-              <option value="60000">60k+</option>
-              <option value="80000">80k+</option>
-              <option value="90000">90k+</option>
-            </select>
+              <div className="flex flex-col sm:flex-row justify-between gap-4">
 
-            <select
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-3 py-2 border rounded-md text-sm"
-            >
-              <option value="">All Companies</option>
-              <option>Product</option>
-              <option>Service</option>
-            </select>
+                <div>
 
-          </div>
+                  <h2 className="text-lg font-semibold">
+                    {job.title}
+                  </h2>
 
-          <p className="text-muted-foreground mb-6">
-            {filteredJobs.length} openings found
-          </p>
+                  <div className="flex gap-4 text-sm text-muted-foreground mt-2">
 
-          {/* JOB CARDS */}
+                    <span className="flex items-center gap-1">
+                      <Building2 className="w-3.5 h-3.5" />
+                      {job.company}
+                    </span>
 
-          <div className="space-y-4">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {job.location}
+                    </span>
 
-            {filteredJobs.map((job, i) => (
-
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="glass-card glow-border p-6 card-hover"
-              >
-
-                <div className="flex flex-col sm:flex-row justify-between gap-4">
-
-                  <div>
-
-                    <h2 className="font-semibold text-lg">
-                      {job.title}
-                    </h2>
-
-                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-
-                      <span className="flex items-center gap-1">
-                        <Building2 className="w-3.5 h-3.5"/>
-                        {job.company}
-                      </span>
-
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5"/>
-                        {job.location}
-                      </span>
-
-                      <span className="text-green-500 font-medium">
-                        💰 ₹{job.salary}
-                      </span>
-
-                      <span className="text-blue-400">
-                        {job.type}
-                      </span>
-
-                    </div>
+                    <span className="text-green-500 font-medium">
+                      ₹{job.salary}
+                    </span>
 
                   </div>
 
-                  <a
-                    href={job.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="glow-button px-5 py-2.5 rounded-lg text-xs font-semibold inline-flex items-center gap-2"
-                  >
-                    Apply
-                    <ExternalLink className="w-3.5 h-3.5"/>
-                  </a>
-
                 </div>
 
-              </motion.div>
+                <a
+                  href={job.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glow-button px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2"
+                >
+                  Apply <ExternalLink className="w-3.5 h-3.5" />
+                </a>
 
-            ))}
+              </div>
 
-          </div>
+            </motion.div>
 
-        </motion.div>
+          ))}
+        </div>
 
       </div>
+
     </div>
   );
 };
