@@ -1,15 +1,41 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Briefcase, TrendingUp, ExternalLink } from "lucide-react";
+import { Briefcase, TrendingUp, ExternalLink, X } from "lucide-react";
+
+const skillResources: Record<string, { name: string; link: string }[]> = {
+  "Django / Spring Boot": [
+    { name: "Django Official Docs", link: "https://docs.djangoproject.com/" },
+    { name: "Spring Boot Guide", link: "https://spring.io/projects/spring-boot" },
+    { name: "Django Tutorial - Real Python", link: "https://realpython.com/tutorials/django/" },
+  ],
+  Docker: [
+    { name: "Docker Official Docs", link: "https://docs.docker.com/" },
+    { name: "Docker Tutorial - Docker Labs", link: "https://dockerlabs.collabnix.com/" },
+    { name: "Docker Crash Course - YouTube", link: "https://www.youtube.com/watch?v=3c-iBn73dDE" },
+  ],
+  "AWS / Azure": [
+    { name: "AWS Training", link: "https://aws.amazon.com/training/" },
+    { name: "Azure Learn", link: "https://learn.microsoft.com/en-us/training/azure/" },
+    { name: "Cloud Tutorials - FreeCodeCamp", link: "https://www.freecodecamp.org/news/aws-cloud-tutorial/" },
+  ],
+  "Unit Testing": [
+    { name: "Jest Docs", link: "https://jestjs.io/docs/getting-started" },
+    { name: "PyTest Docs", link: "https://docs.pytest.org/en/stable/" },
+    { name: "Unit Testing Guide - Guru99", link: "https://www.guru99.com/unit-testing-guide.html" },
+  ],
+  "CI/CD": [
+    { name: "GitHub Actions Docs", link: "https://docs.github.com/en/actions" },
+    { name: "Jenkins CI/CD Tutorial", link: "https://www.jenkins.io/doc/tutorials/" },
+    { name: "CI/CD Concepts - Atlassian", link: "https://www.atlassian.com/continuous-delivery/ci-vs-cd" },
+  ],
+};
 
 const Mapping = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Get role & profile links from query params
-  let roleParam = searchParams.get("role");
-  // If role is undefined, null, or empty string, default to "Software Developer"
+  const roleParam = searchParams.get("role");
   const predictedRole = roleParam && roleParam.trim() !== "" ? roleParam.trim() : "Software Developer";
 
   const scoreParam = searchParams.get("score");
@@ -21,9 +47,9 @@ const Mapping = () => {
   const [roles, setRoles] = useState<{ name: string; match: number }[]>([]);
   const [missingSkills, setMissingSkills] = useState<string[]>([]);
   const [profiles, setProfiles] = useState<{ github?: string; linkedin?: string }>({});
+  const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
 
   useEffect(() => {
-    // Parse missing skills
     let parsedMissing: string[] = [];
     if (missingParam) {
       try {
@@ -34,15 +60,12 @@ const Mapping = () => {
     }
     setMissingSkills(parsedMissing);
 
-    // Generate random match percentage if score is missing or zero
     const baseScore = scoreParam ? Number(scoreParam) : 0;
     const matchPercentage =
-      baseScore > 0 ? Math.round(baseScore * 100) : Math.floor(Math.random() * 41) + 60; // 60-100%
+      baseScore > 0 ? Math.round(baseScore * 100) : Math.floor(Math.random() * 41) + 60;
 
-    // Always ensure at least one role
     setRoles([{ name: predictedRole, match: matchPercentage }]);
 
-    // Profiles (GitHub static fallback)
     setProfiles({
       github: githubParam || "https://github.com/thanusrikumili91/CarRentalSystem",
       linkedin: linkedinParam || "https://www.linkedin.com/in/thanusrikumili91/",
@@ -57,9 +80,7 @@ const Mapping = () => {
         {analyzing ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
             <div className="w-20 h-20 mx-auto mb-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-            <p className="text-2xl font-bold gradient-text mb-3">
-              Matching Your Skills with Job Roles...
-            </p>
+            <p className="text-2xl font-bold gradient-text mb-3">Matching Your Skills with Job Roles...</p>
             <p className="text-muted-foreground">Our AI is analyzing your profile</p>
           </motion.div>
         ) : (
@@ -112,18 +133,50 @@ const Mapping = () => {
                     />
                   </div>
 
-                  {/* Missing Skills Section */}
+                  {/* Missing Skills */}
                   {missingSkills.length > 0 && (
                     <div className="mt-6">
-                      <p className="text-sm font-semibold text-red-500 mb-2">Missing Skills</p>
+                      <p className="text-sm font-semibold text-red-500 mb-2">Missing Skills (Click to See Resources)</p>
                       <div className="flex flex-wrap gap-2">
-                        {missingSkills.map((skill, index) => (
-                          <span key={index} className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">
+                        {missingSkills.map((skill, idx) => (
+                          <span
+                            key={idx}
+                            onClick={() => setSelectedSkill(skill)}
+                            className="cursor-pointer bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs hover:bg-red-200"
+                          >
                             {skill}
                           </span>
                         ))}
                       </div>
                     </div>
+                  )}
+
+                  {/* Skill Resources Modal */}
+                  {selectedSkill && skillResources[selectedSkill] && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                    >
+                      <div className="bg-white p-6 rounded-lg w-full max-w-md relative">
+                        <button
+                          onClick={() => setSelectedSkill(null)}
+                          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                        >
+                          <X />
+                        </button>
+                        <h2 className="font-bold text-lg mb-4">{selectedSkill} Resources</h2>
+                        <ul className="space-y-2 list-disc pl-5">
+                          {skillResources[selectedSkill].map((res, idx) => (
+                            <li key={idx}>
+                              <a href={res.link} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline">
+                                {res.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </motion.div>
                   )}
 
                   {/* GitHub & LinkedIn */}
