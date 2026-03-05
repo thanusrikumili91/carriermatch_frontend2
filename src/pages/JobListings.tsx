@@ -7,6 +7,7 @@ interface Job {
   title: string;
   company: string;
   location: string;
+  salary: string;
   link: string;
 }
 
@@ -15,32 +16,35 @@ interface Job {
 // ------------------------------
 const STATIC_JOBS: Record<string, Job[]> = {
   "Software Developer": [
-    { title: "Software Developer I", company: "Tech Solutions Ltd", location: "London, UK", link: "#" },
-    { title: "Junior Developer", company: "CodeCraft", location: "Manchester, UK", link: "#" },
-    { title: "Fullstack Developer", company: "NextGen Apps", location: "Birmingham, UK", link: "#" },
-    { title: "Backend Developer", company: "Digital Works", location: "Leeds, UK", link: "#" },
-    { title: "Frontend Developer", company: "Web Innovations", location: "Glasgow, UK", link: "#" },
+    { title: "Software Developer I", company: "Apple", location: "Hyderabad", salary: "₹50,000 - ₹80,000", link: "#" },
+    { title: "Junior Developer", company: "IBM", location: "Hyderabad", salary: "₹55,000 - ₹90,000", link: "#" },
+    { title: "Fullstack Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "#" },
+    { title: "Backend Developer", company: "Microsoft", location: "Hyderabad", salary: "₹60,000 - ₹95,000", link: "#" },
+    { title: "Frontend Developer", company: "Infosys", location: "Hyderabad", salary: "₹50,000 - ₹75,000", link: "#" },
   ],
+
   "Data Architect": [
-    { title: "Data Architect", company: "Data Insights", location: "London, UK", link: "#" },
-    { title: "Senior Data Engineer", company: "Analytica", location: "Manchester, UK", link: "#" },
-    { title: "Big Data Architect", company: "Tech Data Ltd", location: "Birmingham, UK", link: "#" },
-    { title: "ETL Developer", company: "InfoTech Solutions", location: "Glasgow, UK", link: "#" },
-    { title: "Database Designer", company: "SmartData Labs", location: "Leeds, UK", link: "#" },
+    { title: "Data Architect", company: "Google", location: "Hyderabad", salary: "₹80,000 - ₹100,000", link: "https://www.naukri.com/google-jobs-in-hyderabad-secunderabad" },
+    { title: "Senior Data Engineer", company: "IBM", location: "Hyderabad", salary: "₹70,000 - ₹95,000", link: "#" },
+    { title: "Big Data Architect", company: "Microsoft", location: "Hyderabad", salary: "₹85,000 - ₹100,000", link: "#" },
+    { title: "ETL Developer", company: "Infosys", location: "Hyderabad", salary: "₹60,000 - ₹80,000", link: "#" },
+    { title: "Database Designer", company: "Apple", location: "Hyderabad", salary: "₹65,000 - ₹90,000", link: "#" },
   ],
+
   "Backend Developer": [
-    { title: "Backend Developer", company: "Digital Works", location: "London, UK", link: "#" },
-    { title: "API Developer", company: "Tech Solutions Ltd", location: "Manchester, UK", link: "#" },
-    { title: "Python Developer", company: "CodeCraft", location: "Birmingham, UK", link: "#" },
-    { title: "Node.js Developer", company: "NextGen Apps", location: "Glasgow, UK", link: "#" },
-    { title: "Java Developer", company: "Web Innovations", location: "Leeds, UK", link: "#" },
+    { title: "Backend Developer", company: "Microsoft", location: "Hyderabad", salary: "₹65,000 - ₹95,000", link: "#" },
+    { title: "API Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "#" },
+    { title: "Python Developer", company: "IBM", location: "Hyderabad", salary: "₹60,000 - ₹85,000", link: "#" },
+    { title: "Node.js Developer", company: "Apple", location: "Hyderabad", salary: "₹65,000 - ₹90,000", link: "#" },
+    { title: "Java Developer", company: "Infosys", location: "Hyderabad", salary: "₹55,000 - ₹80,000", link: "#" },
   ],
+
   "Frontend Engineer": [
-    { title: "Frontend Engineer", company: "Web Innovations", location: "London, UK", link: "#" },
-    { title: "React Developer", company: "NextGen Apps", location: "Manchester, UK", link: "#" },
-    { title: "UI Engineer", company: "Tech Solutions Ltd", location: "Birmingham, UK", link: "#" },
-    { title: "Frontend Developer", company: "Digital Works", location: "Glasgow, UK", link: "#" },
-    { title: "Vue.js Developer", company: "CodeCraft", location: "Leeds, UK", link: "#" },
+    { title: "Frontend Engineer", company: "Apple", location: "Hyderabad", salary: "₹60,000 - ₹90,000", link: "#" },
+    { title: "React Developer", company: "Google", location: "Hyderabad", salary: "₹70,000 - ₹100,000", link: "#" },
+    { title: "UI Engineer", company: "Microsoft", location: "Hyderabad", salary: "₹65,000 - ₹95,000", link: "#" },
+    { title: "Frontend Developer", company: "IBM", location: "Hyderabad", salary: "₹60,000 - ₹85,000", link: "#" },
+    { title: "Vue.js Developer", company: "Infosys", location: "Hyderabad", salary: "₹55,000 - ₹75,000", link: "#" },
   ],
 };
 
@@ -56,7 +60,6 @@ const JobListings = () => {
       setLoading(true);
 
       try {
-        // Try API call first
         const res = await fetch(
           `https://thanusrikumili91-resumeai.hf.space/jobs?role=${encodeURIComponent(role)}`
         );
@@ -65,7 +68,6 @@ const JobListings = () => {
 
         const data = await res.json();
 
-        // Use API jobs if returned, otherwise fallback to static
         if (data?.jobs && data.jobs.length > 0) {
           setJobs(data.jobs);
         } else {
@@ -73,7 +75,6 @@ const JobListings = () => {
         }
       } catch (err) {
         console.error("Job fetch failed:", err);
-        // Fallback to static jobs
         setJobs(STATIC_JOBS[role] || STATIC_JOBS["Software Developer"]);
       } finally {
         setLoading(false);
@@ -121,21 +122,27 @@ const JobListings = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <h2 className="font-semibold text-foreground text-lg">{job.title}</h2>
+
                     <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Building2 className="w-3.5 h-3.5" /> {job.company}
                       </span>
+
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5" /> {job.location}
                       </span>
+
+                      <span className="flex items-center gap-1 font-medium text-green-400">
+                        💰 {job.salary}
+                      </span>
                     </div>
                   </div>
+
                   <a
                     href={job.link}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="glow-button px-5 py-2.5 rounded-lg text-xs font-semibold inline-flex items-center gap-2 shrink-0"
-                    aria-label={`Apply for ${job.title} at ${job.company}`}
                   >
                     Apply <ExternalLink className="w-3.5 h-3.5" />
                   </a>
