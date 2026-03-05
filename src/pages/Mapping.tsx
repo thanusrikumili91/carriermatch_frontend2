@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Briefcase, TrendingUp } from "lucide-react";
+import { Briefcase, TrendingUp, ExternalLink } from "lucide-react";
 
 const Mapping = () => {
   const navigate = useNavigate();
@@ -10,10 +10,13 @@ const Mapping = () => {
   const predictedRole = searchParams.get("role") || "Software Developer";
   const scoreParam = searchParams.get("score");
   const missingParam = searchParams.get("missing");
+  const githubParam = searchParams.get("github");
+  const linkedinParam = searchParams.get("linkedin");
 
   const [analyzing, setAnalyzing] = useState(true);
   const [roles, setRoles] = useState<{ name: string; match: number }[]>([]);
   const [missingSkills, setMissingSkills] = useState<string[]>([]);
+  const [profiles, setProfiles] = useState<{ github?: string; linkedin?: string }>({});
 
   useEffect(() => {
     // Parse missing skills
@@ -29,16 +32,23 @@ const Mapping = () => {
 
     // Generate random match percentage if score is missing or zero
     const baseScore = scoreParam ? Number(scoreParam) : 0;
-    const matchPercentage = baseScore > 0
-      ? Math.round(baseScore * 100)
-      : Math.floor(Math.random() * 41) + 60; // random between 60-100%
+    const matchPercentage =
+      baseScore > 0
+        ? Math.round(baseScore * 100)
+        : Math.floor(Math.random() * 41) + 60; // random between 60-100%
 
-    // If you have multiple roles in future, generate slightly different random percentages
+    // Role list (can expand in future)
     const roleList = [{ name: predictedRole, match: matchPercentage }];
     setRoles(roleList);
 
+    // Set profiles if available
+    setProfiles({
+      github: githubParam ? decodeURIComponent(githubParam) : undefined,
+      linkedin: linkedinParam ? decodeURIComponent(linkedinParam) : undefined,
+    });
+
     setAnalyzing(false);
-  }, [predictedRole, scoreParam, missingParam]);
+  }, [predictedRole, scoreParam, missingParam, githubParam, linkedinParam]);
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
@@ -87,9 +97,7 @@ const Mapping = () => {
                         <Briefcase className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <h2 className="font-semibold text-foreground">
-                          {role.name}
-                        </h2>
+                        <h2 className="font-semibold text-foreground">{role.name}</h2>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <TrendingUp className="w-3 h-3" />
                           <span>{role.match}% Match</span>
@@ -99,9 +107,7 @@ const Mapping = () => {
 
                     <button
                       onClick={() =>
-                        navigate(
-                          `/jobs?role=${encodeURIComponent(role.name)}`
-                        )
+                        navigate(`/jobs?role=${encodeURIComponent(role.name)}`)
                       }
                       className="glow-button px-5 py-2 rounded-lg text-xs font-semibold"
                     >
@@ -139,6 +145,32 @@ const Mapping = () => {
                           </span>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* GitHub & LinkedIn */}
+                  {(profiles.github || profiles.linkedin) && (
+                    <div className="mt-6 flex gap-4">
+                      {profiles.github && (
+                        <a
+                          href={profiles.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1"
+                        >
+                          GitHub <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                      {profiles.linkedin && (
+                        <a
+                          href={profiles.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-semibold text-blue-700 hover:underline flex items-center gap-1"
+                        >
+                          LinkedIn <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
                     </div>
                   )}
                 </motion.div>
