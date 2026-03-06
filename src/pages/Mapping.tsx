@@ -1,274 +1,209 @@
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Briefcase, TrendingUp, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+import { MapPin, Building2, ExternalLink, ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import html2pdf from "html2pdf.js";
 
-const Mapping = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+interface Job {
+  title: string;
+  company: string;
+  location: string;
+  salary: number;
+  type: string;
+  link: string;
+}
 
-  const predictedRole = "Data Scientist";
+const STATIC_JOBS: Job[] = [
+  { title: "Data Engineer", company: "Google", location: "Hyderabad", salary: 90000, type: "Product", link: "https://careers.google.com" },
+  { title: "Junior Data Scientist", company: "Microsoft", location: "Bangalore", salary: 85000, type: "Product", link: "https://careers.microsoft.com" },
+  { title: "Machine Learning Engineer", company: "Amazon", location: "Hyderabad", salary: 95000, type: "Product", link: "https://amazon.jobs" },
+  { title: "Data Analyst", company: "IBM", location: "Pune", salary: 70000, type: "Service", link: "https://www.ibm.com/careers" },
+  { title: "AI Engineer", company: "Meta", location: "Bangalore", salary: 98000, type: "Product", link: "https://www.metacareers.com" },
+  { title: "Data Engineer", company: "Infosys", location: "Chennai", salary: 65000, type: "Service", link: "https://career.infosys.com" },
+  { title: "Data Scientist", company: "TCS", location: "Hyderabad", salary: 72000, type: "Service", link: "https://www.tcs.com/careers" },
+  { title: "ML Engineer", company: "Apple", location: "Bangalore", salary: 97000, type: "Product", link: "https://jobs.apple.com" },
+  { title: "Data Architect", company: "Accenture", location: "Mumbai", salary: 88000, type: "Service", link: "https://www.accenture.com/careers" },
+  { title: "Data Analyst", company: "Deloitte", location: "Hyderabad", salary: 76000, type: "Service", link: "https://jobs2.deloitte.com" },
+  { title: "AI Research Engineer", company: "NVIDIA", location: "Pune", salary: 99000, type: "Product", link: "https://www.nvidia.com/en-us/about-nvidia/careers" },
+  { title: "Data Engineer", company: "Oracle", location: "Bangalore", salary: 91000, type: "Product", link: "https://www.oracle.com/careers" },
+  { title: "ML Developer", company: "Capgemini", location: "Chennai", salary: 67000, type: "Service", link: "https://www.capgemini.com/careers" },
+  { title: "AI Engineer", company: "Samsung", location: "Bangalore", salary: 92000, type: "Product", link: "https://www.samsungcareers.com" },
+  { title: "Big Data Engineer", company: "Wipro", location: "Hyderabad", salary: 74000, type: "Service", link: "https://careers.wipro.com" },
+  { title: "Data Scientist", company: "Flipkart", location: "Bangalore", salary: 93000, type: "Product", link: "https://www.flipkartcareers.com" },
+  { title: "AI Developer", company: "Zoho", location: "Chennai", salary: 81000, type: "Product", link: "https://careers.zoho.com" },
+  { title: "Data Engineer", company: "HCL", location: "Pune", salary: 70000, type: "Service", link: "https://www.hcltech.com/careers" },
+  { title: "Machine Learning Engineer", company: "PayPal", location: "Hyderabad", salary: 94000, type: "Product", link: "https://www.paypal.com/careers" },
+  { title: "Data Analyst", company: "EY", location: "Mumbai", salary: 76000, type: "Service", link: "https://careers.ey.com" }
+];
 
-  const scoreParam = searchParams.get("score");
-  const githubParam = searchParams.get("github")?.trim();
-  const linkedinParam = searchParams.get("linkedin")?.trim();
+const LOCATIONS = ["All", "Hyderabad", "Bangalore", "Chennai", "Pune", "Mumbai"];
+const TYPES = ["All", "Product", "Service"];
 
-  const [analyzing, setAnalyzing] = useState(true);
-  const [roles, setRoles] = useState<{ name: string; match: number }[]>([]);
-  const [missingSkills, setMissingSkills] = useState<string[]>([]);
-  const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+const JobListings = () => {
 
-  const [profiles, setProfiles] = useState<{ github?: string; linkedin?: string }>({});
+  const [locationFilter, setLocationFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
+  const [salaryFilter, setSalaryFilter] = useState(0);
 
-  useEffect(() => {
-    setTimeout(() => {
-      const score = scoreParam ? parseFloat(scoreParam) : 0.82;
+  const filteredJobs = STATIC_JOBS.filter((job) => {
+    const locationMatch =
+      locationFilter === "All" || job.location === locationFilter;
 
-      setRoles([
-        { name: predictedRole, match: score },
-        { name: "Machine Learning Engineer", match: score - 0.1 },
-        { name: "AI Engineer", match: score - 0.15 },
-      ]);
+    const typeMatch =
+      typeFilter === "All" || job.type === typeFilter;
 
-      setMissingSkills(["Machine Learning", "Deep Learning", "NLP"]);
+    const salaryMatch =
+      salaryFilter === 0 || job.salary >= salaryFilter;
 
-      setProfiles({
-        github: githubParam,
-        linkedin: linkedinParam,
-      });
+    return locationMatch && typeMatch && salaryMatch;
+  });
 
-      setAnalyzing(false);
-    }, 2000);
-  }, []);
+  const handleDownloadPDF = () => {
+    const element = document.getElementById("job-list");
+    if (!element) return;
 
-  const suggestedJobs = [
-    {
-      title: "Data Scientist",
-      company: "TCS",
-      location: "Hyderabad",
-      link: "https://www.example.com/job/datascientist",
-    },
-    {
-      title: "Machine Learning Engineer",
-      company: "Infosys",
-      location: "Bangalore",
-      link: "https://www.example.com/job/mlengineer",
-    },
-    {
-      title: "AI Engineer",
-      company: "Wipro",
-      location: "Pune",
-      link: "https://www.example.com/job/aiengineer",
-    },
-  ];
+    const options = {
+      margin: 0.5,
+      filename: "jobs.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+    };
 
-  const projects = [
-    {
-      name: "Resume to Job Role Prediction using ML",
-      link: "https://github.com/thanusrikumili91/resume-job-matcher",
-    },
-    {
-      name: "Customer Churn Prediction System",
-      link: "https://github.com/thanusrikumili91/churn-prediction",
-    },
-    {
-      name: "House Price Prediction using Machine Learning",
-      link: "https://github.com/thanusrikumili91/house-price-ml",
-    },
-    {
-      name: "Sentiment Analysis on Twitter Data",
-      link: "https://github.com/thanusrikumili91/sentiment-analysis",
-    },
-  ];
-
-  const courseSuggestions: any = {
-    "Machine Learning": [
-      {
-        title: "Machine Learning by Andrew Ng",
-        url: "https://www.coursera.org/learn/machine-learning",
-      },
-      {
-        title: "Google Machine Learning Crash Course",
-        url: "https://developers.google.com/machine-learning/crash-course",
-      },
-      {
-        title: "ML Specialization",
-        url: "https://www.coursera.org/specializations/machine-learning-introduction",
-      },
-    ],
-    "Deep Learning": [
-      {
-        title: "Deep Learning Specialization",
-        url: "https://www.coursera.org/specializations/deep-learning",
-      },
-      {
-        title: "Deep Learning with PyTorch",
-        url: "https://www.udacity.com/course/deep-learning-pytorch--ud188",
-      },
-      {
-        title: "Neural Networks and Deep Learning",
-        url: "https://www.coursera.org/learn/neural-networks-deep-learning",
-      },
-    ],
-    NLP: [
-      {
-        title: "Natural Language Processing Specialization",
-        url: "https://www.coursera.org/specializations/natural-language-processing",
-      },
-      {
-        title: "NLP with Python",
-        url: "https://www.udemy.com/course/nlp-natural-language-processing-with-python/",
-      },
-      {
-        title: "Practical NLP",
-        url: "https://course.fast.ai/",
-      },
-    ],
+    (html2pdf as any)().set(options).from(element).save();
   };
 
-  if (analyzing) {
-    return (
-      <div className="text-center mt-20 text-xl font-semibold">
-        Analyzing Resume...
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="min-h-[85vh] px-4 py-12">
 
-      {/* Predicted Role */}
-      <h1 className="text-3xl font-bold mb-6">
-        Predicted Role: {predictedRole}
-      </h1>
+      <div className="max-w-3xl mx-auto">
 
-      {/* Role Match */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Role Match</h2>
+        <Link
+          to="/mapping"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Results
+        </Link>
 
-        {roles.map((role) => (
-          <div key={role.name} className="mb-3">
-            <div className="flex justify-between">
-              <span>{role.name}</span>
-              <span>{(role.match * 100).toFixed(0)}%</span>
-            </div>
+        <h1 className="text-3xl font-bold mb-6">
+          <span className="gradient-text">Data Science Job Listings</span>
+        </h1>
 
-            <div className="w-full bg-gray-200 h-2 rounded">
-              <div
-                className="bg-green-500 h-2 rounded"
-                style={{ width: `${role.match * 100}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+        <button
+          onClick={handleDownloadPDF}
+          className="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md"
+        >
+          Download PDF
+        </button>
 
-      {/* Missing Skills */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Missing Skills</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
 
-        <div className="flex flex-wrap gap-3">
-          {missingSkills.map((skill) => (
-            <button
-              key={skill}
-              onClick={() => setSelectedSkill(skill)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              {skill}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Course Suggestions */}
-      {selectedSkill && (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">
-            Courses for {selectedSkill}
-          </h2>
-
-          <div className="space-y-3">
-            {courseSuggestions[selectedSkill].map((course: any) => (
-              <div
-                key={course.title}
-                className="flex justify-between items-center border p-4 rounded-lg"
-              >
-                <span>{course.title}</span>
-
-                <button
-                  onClick={() => window.open(course.url, "_blank")}
-                  className="flex items-center gap-1 text-blue-600"
-                >
-                  View Course
-                  <ExternalLink size={16} />
-                </button>
-              </div>
+          <select
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+            className="p-2 border rounded-md"
+          >
+            {LOCATIONS.map((loc) => (
+              <option key={loc}>{loc}</option>
             ))}
-          </div>
+          </select>
+
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="p-2 border rounded-md"
+          >
+            {TYPES.map((t) => (
+              <option key={t}>{t}</option>
+            ))}
+          </select>
+
+          <select
+            value={salaryFilter}
+            onChange={(e) => setSalaryFilter(Number(e.target.value))}
+            className="p-2 border rounded-md"
+          >
+            <option value={0}>All Salaries</option>
+            <option value={70000}>70k+</option>
+            <option value={80000}>80k+</option>
+            <option value={90000}>90k+</option>
+          </select>
+
         </div>
-      )}
 
-      {/* Suggested Jobs */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Briefcase size={20} />
-          Suggested Jobs
-        </h2>
+        <p className="text-muted-foreground mb-6">
+          {filteredJobs.length} openings found
+        </p>
 
-        <div className="space-y-3">
-          {suggestedJobs.map((job) => (
-            <div
-              key={job.title}
-              className="flex justify-between items-center border p-4 rounded-lg"
+        <div id="job-list" className="space-y-4">
+          {filteredJobs.map((job, i) => (
+
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="glass-card glow-border p-6"
             >
-              <div>
-                <h3 className="font-semibold">{job.title}</h3>
-                <p className="text-sm text-gray-500">
-                  {job.company} • {job.location}
-                </p>
+
+              <div className="flex flex-col sm:flex-row justify-between gap-4">
+
+                <div>
+
+                  <h2 className="text-lg font-semibold">
+                    {job.title}
+                  </h2>
+
+                  <div className="flex gap-4 text-sm text-muted-foreground mt-2">
+
+                    <span className="flex items-center gap-1">
+                      <Building2 className="w-3.5 h-3.5" />
+                      {job.company}
+                    </span>
+
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {job.location}
+                    </span>
+
+                    <span className="text-green-500 font-medium">
+                      ₹{job.salary}
+                    </span>
+
+                  </div>
+
+                </div>
+
+                <a
+                  href={job.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glow-button px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2"
+                >
+                  Apply <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+
               </div>
 
-              <button
-                onClick={() => window.open(job.link, "_blank")}
-                className="text-blue-600 flex items-center gap-1"
-              >
-                Apply
-                <ExternalLink size={16} />
-              </button>
-            </div>
+            </motion.div>
+
           ))}
         </div>
-      </div>
 
-      {/* Projects */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <TrendingUp size={20} />
-          Suggested Projects
-        </h2>
-
-        <div className="space-y-3">
-          {projects.map((project) => (
-            <div
-              key={project.name}
-              className="flex justify-between items-center border p-4 rounded-lg"
-            >
-              <span>{project.name}</span>
-
-              <button
-                onClick={() => window.open(project.link, "_blank")}
-                className="text-blue-600 flex items-center gap-1"
-              >
-                View
-                <ExternalLink size={16} />
-              </button>
-            </div>
-          ))}
+        {/* NEXT PAGE BUTTON */}
+        <div className="flex justify-end mt-10">
+          <Link
+            to="/courses"
+            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
+          >
+            Next →
+          </Link>
         </div>
+
       </div>
 
     </div>
   );
 };
 
-export default Mapping;
+export default JobListings;
