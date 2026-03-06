@@ -16,74 +16,48 @@ const Mapping = () => {
   const [analyzing, setAnalyzing] = useState(true);
   const [roles, setRoles] = useState<{ name: string; match: number }[]>([]);
   const [missingSkills, setMissingSkills] = useState<string[]>([]);
-  const [profiles, setProfiles] = useState<{ github?: string; linkedin?: string }>({});
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
 
-  // COURSES DATA
-  const courses: Record<string, { title: string; link: string }[]> = {
-    "Machine Learning": [
-      {
-        title: "Machine Learning by Andrew Ng",
-        link: "https://www.coursera.org/learn/machine-learning",
-      },
-      {
-        title: "Machine Learning A-Z",
-        link: "https://www.udemy.com/course/machinelearning/",
-      },
-      {
-        title: "Intro to Machine Learning",
-        link: "https://www.kaggle.com/learn/intro-to-machine-learning",
-      },
-    ],
+  const [profiles, setProfiles] = useState<{ github?: string; linkedin?: string }>({});
 
-    "Deep Learning": [
-      {
-        title: "Deep Learning Specialization",
-        link: "https://www.coursera.org/specializations/deep-learning",
-      },
-      {
-        title: "Deep Learning with TensorFlow",
-        link: "https://www.udacity.com/course/deep-learning-pytorch--ud188",
-      },
-      {
-        title: "Neural Networks Course",
-        link: "https://www.udemy.com/course/deeplearning/",
-      },
-    ],
+  useEffect(() => {
+    setTimeout(() => {
+      const score = scoreParam ? parseFloat(scoreParam) : 0.82;
 
-    Python: [
-      {
-        title: "Python for Everybody",
-        link: "https://www.coursera.org/specializations/python",
-      },
-      {
-        title: "Complete Python Bootcamp",
-        link: "https://www.udemy.com/course/complete-python-bootcamp/",
-      },
-      {
-        title: "Python Tutorial",
-        link: "https://www.w3schools.com/python/",
-      },
-    ],
-  };
+      setRoles([
+        { name: predictedRole, match: score },
+        { name: "Machine Learning Engineer", match: score - 0.1 },
+        { name: "AI Engineer", match: score - 0.15 },
+      ]);
+
+      setMissingSkills(["Machine Learning", "Deep Learning", "NLP"]);
+
+      setProfiles({
+        github: githubParam,
+        linkedin: linkedinParam,
+      });
+
+      setAnalyzing(false);
+    }, 2000);
+  }, []);
 
   const suggestedJobs = [
     {
       title: "Data Scientist",
       company: "TCS",
-      location: "Hyderabad, India",
+      location: "Hyderabad",
       link: "https://www.example.com/job/datascientist",
     },
     {
       title: "Machine Learning Engineer",
       company: "Infosys",
-      location: "Bangalore, India",
+      location: "Bangalore",
       link: "https://www.example.com/job/mlengineer",
     },
     {
       title: "AI Engineer",
       company: "Wipro",
-      location: "Pune, India",
+      location: "Pune",
       link: "https://www.example.com/job/aiengineer",
     },
   ];
@@ -107,114 +81,192 @@ const Mapping = () => {
     },
   ];
 
-  useEffect(() => {
-    setTimeout(() => {
-      setRoles([
-        { name: "Data Scientist", match: 92 },
-        { name: "ML Engineer", match: 86 },
-        { name: "AI Engineer", match: 80 },
-      ]);
+  const courseSuggestions: any = {
+    "Machine Learning": [
+      {
+        title: "Machine Learning by Andrew Ng",
+        url: "https://www.coursera.org/learn/machine-learning",
+      },
+      {
+        title: "Google Machine Learning Crash Course",
+        url: "https://developers.google.com/machine-learning/crash-course",
+      },
+      {
+        title: "ML Specialization",
+        url: "https://www.coursera.org/specializations/machine-learning-introduction",
+      },
+    ],
+    "Deep Learning": [
+      {
+        title: "Deep Learning Specialization",
+        url: "https://www.coursera.org/specializations/deep-learning",
+      },
+      {
+        title: "Deep Learning with PyTorch",
+        url: "https://www.udacity.com/course/deep-learning-pytorch--ud188",
+      },
+      {
+        title: "Neural Networks and Deep Learning",
+        url: "https://www.coursera.org/learn/neural-networks-deep-learning",
+      },
+    ],
+    NLP: [
+      {
+        title: "Natural Language Processing Specialization",
+        url: "https://www.coursera.org/specializations/natural-language-processing",
+      },
+      {
+        title: "NLP with Python",
+        url: "https://www.udemy.com/course/nlp-natural-language-processing-with-python/",
+      },
+      {
+        title: "Practical NLP",
+        url: "https://course.fast.ai/",
+      },
+    ],
+  };
 
-      setMissingSkills(["Machine Learning", "Deep Learning", "Python"]);
-      setProfiles({ github: githubParam || "", linkedin: linkedinParam || "" });
-
-      setAnalyzing(false);
-    }, 1500);
-  }, []);
+  if (analyzing) {
+    return (
+      <div className="text-center mt-20 text-xl font-semibold">
+        Analyzing Resume...
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-10">
+    <div className="max-w-5xl mx-auto p-6">
 
-      <motion.h1
-        className="text-3xl font-bold text-center mb-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        Career Skill Mapping
-      </motion.h1>
+      {/* Predicted Role */}
+      <h1 className="text-3xl font-bold mb-6">
+        Predicted Role: {predictedRole}
+      </h1>
+
+      {/* Role Match */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Role Match</h2>
+
+        {roles.map((role) => (
+          <div key={role.name} className="mb-3">
+            <div className="flex justify-between">
+              <span>{role.name}</span>
+              <span>{(role.match * 100).toFixed(0)}%</span>
+            </div>
+
+            <div className="w-full bg-gray-200 h-2 rounded">
+              <div
+                className="bg-green-500 h-2 rounded"
+                style={{ width: `${role.match * 100}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Missing Skills */}
-      <div className="bg-white p-6 rounded-xl shadow mb-10">
+      <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Missing Skills</h2>
 
         <div className="flex flex-wrap gap-3">
-          {missingSkills.map((skill, index) => (
+          {missingSkills.map((skill) => (
             <button
-              key={index}
+              key={skill}
               onClick={() => setSelectedSkill(skill)}
-              className="px-4 py-2 bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               {skill}
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Show Courses */}
-        {selectedSkill && courses[selectedSkill] && (
-          <div className="mt-6">
-            <h3 className="font-semibold mb-3">
-              Recommended Courses for {selectedSkill}
-            </h3>
+      {/* Course Suggestions */}
+      {selectedSkill && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">
+            Courses for {selectedSkill}
+          </h2>
 
-            <div className="space-y-2">
-              {courses[selectedSkill].map((course, i) => (
+          <div className="space-y-3">
+            {courseSuggestions[selectedSkill].map((course: any) => (
+              <div
+                key={course.title}
+                className="flex justify-between items-center border p-4 rounded-lg"
+              >
+                <span>{course.title}</span>
+
                 <button
-                  key={i}
-                  onClick={() => window.open(course.link, "_blank")}
-                  className="block w-full text-left px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-lg"
+                  onClick={() => window.open(course.url, "_blank")}
+                  className="flex items-center gap-1 text-blue-600"
                 >
-                  {course.title}
+                  View Course
+                  <ExternalLink size={16} />
                 </button>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
+      )}
+
+      {/* Suggested Jobs */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Briefcase size={20} />
+          Suggested Jobs
+        </h2>
+
+        <div className="space-y-3">
+          {suggestedJobs.map((job) => (
+            <div
+              key={job.title}
+              className="flex justify-between items-center border p-4 rounded-lg"
+            >
+              <div>
+                <h3 className="font-semibold">{job.title}</h3>
+                <p className="text-sm text-gray-500">
+                  {job.company} • {job.location}
+                </p>
+              </div>
+
+              <button
+                onClick={() => window.open(job.link, "_blank")}
+                className="text-blue-600 flex items-center gap-1"
+              >
+                Apply
+                <ExternalLink size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Projects */}
-      <div className="bg-white p-6 rounded-xl shadow mb-10">
-        <h2 className="text-xl font-semibold mb-4">Suggested Projects</h2>
-
-        {projects.map((project, index) => (
-          <a
-            key={index}
-            href={project.link}
-            target="_blank"
-            className="block mb-3 text-blue-600 hover:underline"
-          >
-            {project.name}
-          </a>
-        ))}
-      </div>
-
-      {/* Jobs */}
-      <div className="bg-white p-6 rounded-xl shadow">
+      <div>
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Briefcase size={20} /> Suggested Jobs
+          <TrendingUp size={20} />
+          Suggested Projects
         </h2>
 
-        {suggestedJobs.map((job, index) => (
-          <div
-            key={index}
-            className="border-b py-3 flex justify-between items-center"
-          >
-            <div>
-              <p className="font-semibold">{job.title}</p>
-              <p className="text-sm text-gray-500">
-                {job.company} • {job.location}
-              </p>
-            </div>
-
-            <a
-              href={job.link}
-              target="_blank"
-              className="text-blue-600 flex items-center gap-1"
+        <div className="space-y-3">
+          {projects.map((project) => (
+            <div
+              key={project.name}
+              className="flex justify-between items-center border p-4 rounded-lg"
             >
-              Apply <ExternalLink size={16} />
-            </a>
-          </div>
-        ))}
+              <span>{project.name}</span>
+
+              <button
+                onClick={() => window.open(project.link, "_blank")}
+                className="text-blue-600 flex items-center gap-1"
+              >
+                View
+                <ExternalLink size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
+
     </div>
   );
 };
