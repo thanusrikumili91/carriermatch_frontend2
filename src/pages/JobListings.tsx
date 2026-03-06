@@ -9,27 +9,27 @@ const mockRoles = [
   { name: "UI/UX Designer", match: 76 },
 ];
 
-// Added resources for missing skills
 const learningResources = [
   {
     title: "JavaScript Full Course",
-    link: "https://www.youtube.com/watch?v=PkZNo7MFNFg"
+    link: "https://www.youtube.com/watch?v=PkZNo7MFNFg",
   },
   {
     title: "React Beginner Tutorial",
-    link: "https://www.youtube.com/watch?v=bMknfKXIFA8"
+    link: "https://www.youtube.com/watch?v=bMknfKXIFA8",
   },
   {
     title: "Frontend Developer Roadmap",
-    link: "https://roadmap.sh/frontend"
-  }
+    link: "https://roadmap.sh/frontend",
+  },
 ];
 
 const Mapping = () => {
   const navigate = useNavigate();
+
   const [analyzing, setAnalyzing] = useState(true);
   const [roles, setRoles] = useState<typeof mockRoles>([]);
-  const [showResources, setShowResources] = useState<number | null>(null); // added state
+  const [showResources, setShowResources] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -99,21 +99,20 @@ const Mapping = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() =>
+                          setShowResources(showResources === i ? null : i)
+                        }
+                        className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white relative z-10 cursor-pointer"
+                      >
+                        Missing Skills
+                      </button>
+
+                      <button
+                        onClick={() =>
                           navigate(`/jobs?role=${encodeURIComponent(role.name)}`)
                         }
                         className="glow-button px-5 py-2 rounded-lg text-xs font-semibold"
                       >
                         View Jobs
-                      </button>
-
-                      {/* Added Missing Skills Button */}
-                      <button
-                        onClick={() =>
-                          setShowResources(showResources === i ? null : i)
-                        }
-                        className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white"
-                      >
-                        Missing Skills
                       </button>
                     </div>
                   </div>
@@ -132,7 +131,7 @@ const Mapping = () => {
                     />
                   </div>
 
-                  {/* Resources Section */}
+                  {/* Learning Resources */}
                   {showResources === i && (
                     <div className="mt-4 space-y-2">
                       {learningResources.map((course, index) => (
