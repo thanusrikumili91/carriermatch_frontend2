@@ -1,185 +1,167 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { MapPin, Building2, ExternalLink, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Briefcase, TrendingUp } from "lucide-react";
 
-interface Job {
-  title: string;
-  company: string;
-  location: string;
-  salary: number;
-  type: string;
-  link: string;
-}
-
-// -----------------------------
-// 20 Data Science / Data Engineer Jobs
-// -----------------------------
-const STATIC_JOBS: Job[] = [
-  { title: "Data Engineer", company: "Google", location: "Hyderabad", salary: 90000, type: "Product", link: "https://careers.google.com" },
-  { title: "Junior Data Scientist", company: "Microsoft", location: "Bangalore", salary: 85000, type: "Product", link: "https://careers.microsoft.com" },
-  { title: "Machine Learning Engineer", company: "Amazon", location: "Hyderabad", salary: 95000, type: "Product", link: "https://amazon.jobs" },
-  { title: "Data Analyst", company: "IBM", location: "Pune", salary: 70000, type: "Service", link: "https://www.ibm.com/careers" },
-  { title: "AI Engineer", company: "Meta", location: "Bangalore", salary: 98000, type: "Product", link: "https://www.metacareers.com" },
-  { title: "Data Engineer", company: "Infosys", location: "Chennai", salary: 65000, type: "Service", link: "https://career.infosys.com" },
-  { title: "Data Scientist", company: "TCS", location: "Hyderabad", salary: 72000, type: "Service", link: "https://www.tcs.com/careers" },
-  { title: "ML Engineer", company: "Apple", location: "Bangalore", salary: 97000, type: "Product", link: "https://jobs.apple.com" },
-  { title: "Data Architect", company: "Accenture", location: "Mumbai", salary: 88000, type: "Service", link: "https://www.accenture.com/careers" },
-  { title: "Data Analyst", company: "Deloitte", location: "Hyderabad", salary: 76000, type: "Service", link: "https://jobs2.deloitte.com" },
-  { title: "AI Research Engineer", company: "NVIDIA", location: "Pune", salary: 99000, type: "Product", link: "https://www.nvidia.com/en-us/about-nvidia/careers" },
-  { title: "Data Engineer", company: "Oracle", location: "Bangalore", salary: 91000, type: "Product", link: "https://www.oracle.com/careers" },
-  { title: "ML Developer", company: "Capgemini", location: "Chennai", salary: 67000, type: "Service", link: "https://www.capgemini.com/careers" },
-  { title: "AI Engineer", company: "Samsung", location: "Bangalore", salary: 92000, type: "Product", link: "https://www.samsungcareers.com" },
-  { title: "Big Data Engineer", company: "Wipro", location: "Hyderabad", salary: 74000, type: "Service", link: "https://careers.wipro.com" },
-  { title: "Data Scientist", company: "Flipkart", location: "Bangalore", salary: 93000, type: "Product", link: "https://www.flipkartcareers.com" },
-  { title: "AI Developer", company: "Zoho", location: "Chennai", salary: 81000, type: "Product", link: "https://careers.zoho.com" },
-  { title: "Data Engineer", company: "HCL", location: "Pune", salary: 70000, type: "Service", link: "https://www.hcltech.com/careers" },
-  { title: "Machine Learning Engineer", company: "PayPal", location: "Hyderabad", salary: 94000, type: "Product", link: "https://www.paypal.com/careers" },
-  { title: "Data Analyst", company: "EY", location: "Mumbai", salary: 76000, type: "Service", link: "https://careers.ey.com" }
+const mockRoles = [
+  { name: "Frontend Developer", match: 87 },
+  { name: "Data Analyst", match: 82 },
+  { name: "UI/UX Designer", match: 76 },
 ];
 
-const LOCATIONS = ["All", "Hyderabad", "Bangalore", "Chennai", "Pune", "Mumbai"];
-const TYPES = ["All", "Product", "Service"];
+// Added resources for missing skills
+const learningResources = [
+  {
+    title: "JavaScript Full Course",
+    link: "https://www.youtube.com/watch?v=PkZNo7MFNFg"
+  },
+  {
+    title: "React Beginner Tutorial",
+    link: "https://www.youtube.com/watch?v=bMknfKXIFA8"
+  },
+  {
+    title: "Frontend Developer Roadmap",
+    link: "https://roadmap.sh/frontend"
+  }
+];
 
-const JobListings = () => {
+const Mapping = () => {
+  const navigate = useNavigate();
+  const [analyzing, setAnalyzing] = useState(true);
+  const [roles, setRoles] = useState<typeof mockRoles>([]);
+  const [showResources, setShowResources] = useState<number | null>(null); // added state
 
-  const [locationFilter, setLocationFilter] = useState("All");
-  const [typeFilter, setTypeFilter] = useState("All");
-  const [salaryFilter, setSalaryFilter] = useState(0);
-
-  // Filter logic
-  const filteredJobs = STATIC_JOBS.filter((job) => {
-    const locationMatch =
-      locationFilter === "All" || job.location === locationFilter;
-
-    const typeMatch =
-      typeFilter === "All" || job.type === typeFilter;
-
-    const salaryMatch =
-      salaryFilter === 0 || job.salary >= salaryFilter;
-
-    return locationMatch && typeMatch && salaryMatch;
-  });
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnalyzing(false);
+      setRoles(mockRoles);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="min-h-[85vh] px-4 py-12">
-
-      <div className="max-w-3xl mx-auto">
-
-        <Link
-          to="/mapping"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Results
-        </Link>
-
-        <h1 className="text-3xl font-bold mb-6">
-          <span className="gradient-text">Data Science Job Listings</span>
-        </h1>
-
-        {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-
-          {/* Location Filter */}
-          <select
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
-            className="p-2 border rounded-md"
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-2xl">
+        {analyzing ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-20"
           >
-            {LOCATIONS.map((loc) => (
-              <option key={loc}>{loc}</option>
-            ))}
-          </select>
-
-          {/* Company Type */}
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="p-2 border rounded-md"
+            <div className="w-20 h-20 mx-auto mb-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            <p className="text-2xl font-bold gradient-text mb-3">
+              Matching Your Skills with Job Roles...
+            </p>
+            <p className="text-muted-foreground">
+              Our AI is analyzing your profile
+            </p>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            {TYPES.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
+            <div className="text-center mb-10">
+              <h1 className="text-3xl font-bold mb-2">
+                Your <span className="gradient-text">Top Matches</span>
+              </h1>
+              <p className="text-muted-foreground">
+                Based on your skills and experience
+              </p>
+            </div>
 
-          {/* Salary Filter */}
-          <select
-            value={salaryFilter}
-            onChange={(e) => setSalaryFilter(Number(e.target.value))}
-            className="p-2 border rounded-md"
-          >
-            <option value={0}>All Salaries</option>
-            <option value={70000}>70k+</option>
-            <option value={80000}>80k+</option>
-            <option value={90000}>90k+</option>
-          </select>
+            <div className="space-y-4">
+              {roles.map((role, i) => (
+                <motion.div
+                  key={role.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.2, duration: 0.4 }}
+                  className="glass-card glow-border p-6 card-hover"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Briefcase className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h2 className="font-semibold text-foreground">
+                          {role.name}
+                        </h2>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <TrendingUp className="w-3 h-3" />
+                          <span>{role.match}% Match</span>
+                        </div>
+                      </div>
+                    </div>
 
-        </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          navigate(`/jobs?role=${encodeURIComponent(role.name)}`)
+                        }
+                        className="glow-button px-5 py-2 rounded-lg text-xs font-semibold"
+                      >
+                        View Jobs
+                      </button>
 
-        <p className="text-muted-foreground mb-6">
-          {filteredJobs.length} openings found
-        </p>
-
-        {/* Job Cards */}
-        <div className="space-y-4">
-          {filteredJobs.map((job, i) => (
-
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="glass-card glow-border p-6"
-            >
-
-              <div className="flex flex-col sm:flex-row justify-between gap-4">
-
-                <div>
-
-                  <h2 className="text-lg font-semibold">
-                    {job.title}
-                  </h2>
-
-                  <div className="flex gap-4 text-sm text-muted-foreground mt-2">
-
-                    <span className="flex items-center gap-1">
-                      <Building2 className="w-3.5 h-3.5" />
-                      {job.company}
-                    </span>
-
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {job.location}
-                    </span>
-
-                    <span className="text-green-500 font-medium">
-                      ₹{job.salary}
-                    </span>
-
+                      {/* Added Missing Skills Button */}
+                      <button
+                        onClick={() =>
+                          setShowResources(showResources === i ? null : i)
+                        }
+                        className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white"
+                      >
+                        Missing Skills
+                      </button>
+                    </div>
                   </div>
 
-                </div>
+                  {/* Progress bar */}
+                  <div className="w-full h-2 rounded-full bg-secondary overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${role.match}%` }}
+                      transition={{
+                        delay: i * 0.2 + 0.3,
+                        duration: 0.8,
+                        ease: "easeOut",
+                      }}
+                      className="h-full rounded-full progress-glow"
+                    />
+                  </div>
 
-                <a
-                  href={job.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="glow-button px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2"
-                >
-                  Apply <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+                  {/* Resources Section */}
+                  {showResources === i && (
+                    <div className="mt-4 space-y-2">
+                      {learningResources.map((course, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center bg-gray-100 p-3 rounded-md"
+                        >
+                          <span className="text-sm">{course.title}</span>
 
-              </div>
-
-            </motion.div>
-
-          ))}
-        </div>
-
+                          <a
+                            href={course.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 text-xs font-semibold"
+                          >
+                            Go to Course
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
-
     </div>
   );
 };
 
-export default JobListings;
+export default Mapping;
