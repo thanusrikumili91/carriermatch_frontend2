@@ -1,3 +1,4 @@
+```tsx
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { MapPin, Building2, ExternalLink, ArrowLeft } from "lucide-react";
@@ -12,9 +13,6 @@ interface Job {
   link: string;
 }
 
-// -----------------------------
-// 20 Data Science / Data Engineer Jobs
-// -----------------------------
 const STATIC_JOBS: Job[] = [
   { title: "Data Engineer", company: "Google", location: "Hyderabad", salary: 90000, type: "Product", link: "https://careers.google.com" },
   { title: "Junior Data Scientist", company: "Microsoft", location: "Bangalore", salary: 85000, type: "Product", link: "https://careers.microsoft.com" },
@@ -43,29 +41,24 @@ const TYPES = ["All", "Product", "Service"];
 
 const JobListings = () => {
 
-  const [locationFilter, setLocationFilter] = useState("All");
-  const [typeFilter, setTypeFilter] = useState("All");
-  const [salaryFilter, setSalaryFilter] = useState(0);
+  const [locationFilter, setLocationFilter] = useState<string>("All");
+  const [typeFilter, setTypeFilter] = useState<string>("All");
+  const [salaryFilter, setSalaryFilter] = useState<number>(0);
 
-  // Filter + Sort logic
+  // Filter + Sort
   const filteredJobs = STATIC_JOBS
     .filter((job) => {
-      const locationMatch =
-        locationFilter === "All" || job.location === locationFilter;
-
-      const typeMatch =
-        typeFilter === "All" || job.type === typeFilter;
-
-      const salaryMatch =
-        salaryFilter === 0 || job.salary >= salaryFilter;
+      const locationMatch = locationFilter === "All" || job.location === locationFilter;
+      const typeMatch = typeFilter === "All" || job.type === typeFilter;
+      const salaryMatch = salaryFilter === 0 || job.salary >= salaryFilter;
 
       return locationMatch && typeMatch && salaryMatch;
     })
-    .sort((a, b) => a.title.localeCompare(b.title)); // Alphabetical A-Z
+    .slice() // copy array
+    .sort((a: Job, b: Job) => a.title.localeCompare(b.title));
 
   return (
     <div className="min-h-[85vh] px-4 py-12">
-
       <div className="max-w-3xl mx-auto">
 
         <Link
@@ -82,29 +75,26 @@ const JobListings = () => {
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
 
-          {/* Location Filter */}
           <select
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
             className="p-2 border rounded-md"
           >
             {LOCATIONS.map((loc) => (
-              <option key={loc}>{loc}</option>
+              <option key={loc} value={loc}>{loc}</option>
             ))}
           </select>
 
-          {/* Company Type */}
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
             className="p-2 border rounded-md"
           >
             {TYPES.map((t) => (
-              <option key={t}>{t}</option>
+              <option key={t} value={t}>{t}</option>
             ))}
           </select>
 
-          {/* Salary Filter */}
           <select
             value={salaryFilter}
             onChange={(e) => setSalaryFilter(Number(e.target.value))}
@@ -179,9 +169,9 @@ const JobListings = () => {
         </div>
 
       </div>
-
     </div>
   );
 };
 
 export default JobListings;
+```
