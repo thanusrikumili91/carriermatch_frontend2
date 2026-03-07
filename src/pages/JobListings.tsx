@@ -47,19 +47,21 @@ const JobListings = () => {
   const [typeFilter, setTypeFilter] = useState("All");
   const [salaryFilter, setSalaryFilter] = useState(0);
 
-  // Filter logic
-  const filteredJobs = STATIC_JOBS.filter((job) => {
-    const locationMatch =
-      locationFilter === "All" || job.location === locationFilter;
+  // Filter + Sort logic
+  const filteredJobs = STATIC_JOBS
+    .filter((job) => {
+      const locationMatch =
+        locationFilter === "All" || job.location === locationFilter;
 
-    const typeMatch =
-      typeFilter === "All" || job.type === typeFilter;
+      const typeMatch =
+        typeFilter === "All" || job.type === typeFilter;
 
-    const salaryMatch =
-      salaryFilter === 0 || job.salary >= salaryFilter;
+      const salaryMatch =
+        salaryFilter === 0 || job.salary >= salaryFilter;
 
-    return locationMatch && typeMatch && salaryMatch;
-  });
+      return locationMatch && typeMatch && salaryMatch;
+    })
+    .sort((a, b) => a.title.localeCompare(b.title)); // Alphabetical A-Z
 
   return (
     <div className="min-h-[85vh] px-4 py-12">
